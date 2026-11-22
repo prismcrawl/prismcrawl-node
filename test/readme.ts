@@ -3,7 +3,9 @@ import PrismCrawl, {
   APIStatusError,
   InsufficientCreditsError,
   RateLimitError,
+  WebhookVerificationError,
   decodeHtml,
+  verifyWebhook,
   type GoogleSearchRequest,
   type GoogleSearchResponse,
   type YelpReviewsResult,
@@ -77,5 +79,49 @@ export async function aiAnswers(client: PrismCrawl) {
     for (const feature of response.data.content.serp_features) {
       if (feature.type === "ai_summary") console.log(feature);
     }
+  }
+}
+
+export async function newReadmeExamples(client: PrismCrawl) {
+  const first = await client.google.aiMode({ query: "compare electric cars for a family", continuable: true });
+  if (first.data.format === "json" && first.data.content.subsequent_request_token) {
+    await client.google.aiMode({
+      query: "which has the most cargo space?",
+      subsequent_request_token: first.data.content.subsequent_request_token,
+    });
+  }
+
+  const md = await client.google.search({ query: "best espresso machines", output: "md" });
+  console.log(md.data.content);
+  const urls = await client.google.search({ query: "best espresso machines", json_restrictor: "results[].{title,url}" });
+  console.log(urls.data.content);
+
+  await client.google.decode({ urls: ["https://www.google.com/url?..."] });
+
+  await client.account.requests.list({ provider: "google", status: "failure", limit: 20 });
+  for await (const page of client.account.requests.pages({ from: "2026-11-01T00:00:00Z" })) {
+    for (const request of page.data.requests) console.log(request.request_id);
+  }
+
+  const receipt = await client.google.search.submit({
+    query: "best espresso machines",
+    webhook_url: "https://example.com/prismcrawl-webhook",
+    webhook_secret: process.env.PRISMCRAWL_WEBHOOK_SECRET!,
+  });
+  console.log(receipt.data.job_id, receipt.data.status);
+}
+
+export async function POST(request: Request) {
+  try {
+    const event = await verifyWebhook({
+      payload: await request.text(),
+      headers: request.headers,
+      secret: process.env.PRISMCRAWL_WEBHOOK_SECRET!,
+    });
+    void event.body;
+    return new Response(null, { status: 204 });
+  } catch (error) {
+    if (error instanceof WebhookVerificationError) return new Response(null, { status: 400 });
+    throw error;
   }
 }

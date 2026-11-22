@@ -3,15 +3,34 @@ import type { components } from "./openapi.gen.js";
 
 type Schemas = components["schemas"];
 
-export type GoogleMapsSearchRequest = Schemas["GoogleMapsSearchRequest"];
+export type GoogleMapsSearchRequest = Schemas["GoogleMapsSearchRequest"] & ({ type: NonNullable<Schemas["GoogleMapsSearchRequest"]["type"]>; data: NonNullable<Schemas["GoogleMapsSearchRequest"]["data"]> } | { place_id: NonNullable<Schemas["GoogleMapsSearchRequest"]["place_id"]> } | { data_cid: NonNullable<Schemas["GoogleMapsSearchRequest"]["data_cid"]> } | { query: NonNullable<Schemas["GoogleMapsSearchRequest"]["query"]> });
 
-export type GoogleSearchRequest = Schemas["GoogleSearchRequest"];
+export type GoogleSearchRequest = Schemas["GoogleSearchRequest"] & ({ query: NonNullable<Schemas["GoogleSearchRequest"]["query"]> } | { url: NonNullable<Schemas["GoogleSearchRequest"]["url"]> });
 
 export type AmazonSearchRequest = Schemas["AmazonSearchRequest"];
 
 export type Coordinates = Schemas["Coordinates"];
 
 export type MicrosoftSearchRequest = Schemas["MicrosoftSearchRequest"];
+
+export type RequestHistoryArchive = Schemas["RequestHistoryArchive"];
+
+export type RequestHistoryListItem = Schemas["RequestHistoryListItem"];
+
+/** Limited audit/billing record. Query, provider, origin, parameters, format and archive fields are absent. */
+export type ZeroTraceHistoryListItem = Schemas["ZeroTraceHistoryListItem"];
+
+export type RequestHistoryListResponse = Schemas["RequestHistoryListResponse"];
+
+export type RequestHistoryMetadataResponse = Schemas["RequestHistoryMetadataResponse"];
+
+export type MarkdownSearchData = Schemas["MarkdownSearchData"];
+
+export type ProjectedSearchData = Schemas["ProjectedSearchData"];
+
+export type MarkdownSearchResponse = Schemas["MarkdownSearchResponse"];
+
+export type ProjectedSearchResponse = Schemas["ProjectedSearchResponse"];
 
 export type GoogleMapsSearchResponse = Schemas["GoogleMapsSearchResponse"];
 
@@ -48,6 +67,9 @@ export type GoogleSearchContent = Schemas["GoogleSearchContent"];
 export type MicrosoftSearchContent = Schemas["MicrosoftSearchContent"];
 
 export type AmazonSearchContent = Schemas["AmazonSearchContent"];
+
+/** Image or video preview as an HTTP(S) URL or inline data:image URI. Always present on result and feature-item records; an empty string means no thumbnail was available. Thumbnails are best effort and size-limited. With zero_trace and JSON output, some additional thumbnails may be unavailable. */
+export type Thumbnail = Schemas["Thumbnail"];
 
 export type GoogleMapsSearchParameters = Schemas["GoogleMapsSearchParameters"];
 
@@ -105,10 +127,10 @@ export type ErrorResponse = Schemas["ErrorResponse"];
 
 export type ZeroTraceHistoryResponse = Schemas["ZeroTraceHistoryResponse"];
 
-/** Retrieve DuckDuckGo Search data with the existing PrismCrawl authentication, credits, and request-history behavior. */
+/** Retrieve DuckDuckGo Search data with the existing PrismCrawl authentication, credits, and request-history behavior. Queries must not exceed 500 UTF-8 bytes; non-ASCII characters can use multiple bytes. */
 export type DuckDuckGoRequest = Schemas["Catalog_duckduckgo_Request"];
 
-/** Fields depend on the source listing. Unavailable optional fields may be omitted; no rating, price, or review text is inferred. */
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
 export type DuckDuckGoResult = Schemas["Catalog_duckduckgo_Result"];
 
 export type DuckDuckGoResponse = Schemas["Catalog_duckduckgo_Response"];
@@ -116,23 +138,23 @@ export type DuckDuckGoResponse = Schemas["Catalog_duckduckgo_Response"];
 /** Retrieve DuckDuckGo Maps data with the existing PrismCrawl authentication, credits, and request-history behavior. */
 export type DuckDuckGoMapsRequest = Schemas["Catalog_duckduckgo_maps_Request"];
 
-/** Fields depend on the source listing. Unavailable optional fields may be omitted; no rating, price, or review text is inferred. */
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
 export type DuckDuckGoMapsResult = Schemas["Catalog_duckduckgo_maps_Result"];
 
 export type DuckDuckGoMapsResponse = Schemas["Catalog_duckduckgo_maps_Response"];
 
-/** Retrieve Bing Maps data with the existing PrismCrawl authentication, credits, and request-history behavior. */
+/** Search Bing Maps or retrieve a native place by place_id. Optional missing place details keep their declared zero values. */
 export type BingMapsRequest = Schemas["Catalog_bing_maps_Request"];
 
-/** Fields depend on the source listing. Unavailable optional fields may be omitted; no rating, price, or review text is inferred. */
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
 export type BingMapsResult = Schemas["Catalog_bing_maps_Result"];
 
 export type BingMapsResponse = Schemas["Catalog_bing_maps_Response"];
 
-/** Retrieve Apple Maps Places data with the existing PrismCrawl authentication, credits, and request-history behavior. */
+/** Search Apple Maps places with a location or coordinates, regional localization and native search refinements. */
 export type AppleMapsRequest = Schemas["Catalog_apple_maps_Request"];
 
-/** Fields depend on the source listing. Unavailable optional fields may be omitted; no rating, price, or review text is inferred. */
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
 export type AppleMapsResult = Schemas["Catalog_apple_maps_Result"];
 
 export type AppleMapsResponse = Schemas["Catalog_apple_maps_Response"];
@@ -140,15 +162,15 @@ export type AppleMapsResponse = Schemas["Catalog_apple_maps_Response"];
 /** Return Apple Maps' attributed review selection. Exact linked Yelp and Tripadvisor reviews include complete publisher text when available; other rows remain marked excerpts. Apple provides no additional review pages. */
 export type AppleMapsReviewsRequest = Schemas["Catalog_apple_maps_reviews_Request"];
 
-/** Fields depend on the source listing. Unavailable optional fields may be omitted; no rating, price, or review text is inferred. */
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
 export type AppleMapsReviewsResult = Schemas["Catalog_apple_maps_reviews_Result"];
 
 export type AppleMapsReviewsResponse = Schemas["Catalog_apple_maps_reviews_Response"];
 
-/** Search Yelp's native business lookup by query and exactly one of location or coordinates. Results follow the lookup's native order within its first 200 businesses. Category filters and alternative sorts are unsupported. A location Yelp cannot resolve returns a successful empty result with search_parameters.location_not_found set to true and consumes one search credit. Keep query, location, device, language, and limit unchanged when increasing page. */
+/** Search Yelp businesses by query and area. Category, attribute, neighborhood, alternative sort and regional-domain selections use standard search. Unfiltered US relevance requests retain native business lookup. Pagination is limited to the first 200 businesses. */
 export type YelpRequest = Omit<Schemas["Catalog_yelp_Request"], "location" | "coordinates"> & ({ location: NonNullable<Schemas["Catalog_yelp_Request"]["location"]>; coordinates?: never } | { location?: never; coordinates: NonNullable<Schemas["Catalog_yelp_Request"]["coordinates"]> });
 
-/** Fields depend on the source listing. Unavailable optional fields may be omitted; no rating, price, or review text is inferred. */
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
 export type YelpResult = Schemas["Catalog_yelp_Result"];
 
 export type YelpResponse = Schemas["Catalog_yelp_Response"];
@@ -156,7 +178,7 @@ export type YelpResponse = Schemas["Catalog_yelp_Response"];
 /** Retrieve Tripadvisor Search data with the existing PrismCrawl authentication, credits, and request-history behavior. */
 export type TripadvisorRequest = Schemas["Catalog_tripadvisor_Request"];
 
-/** Fields depend on the source listing. Unavailable optional fields may be omitted; no rating, price, or review text is inferred. */
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
 export type TripadvisorResult = Schemas["Catalog_tripadvisor_Result"];
 
 export type TripadvisorResponse = Schemas["Catalog_tripadvisor_Response"];
@@ -164,31 +186,31 @@ export type TripadvisorResponse = Schemas["Catalog_tripadvisor_Response"];
 /** Retrieve Tripadvisor Place data with the existing PrismCrawl authentication, credits, and request-history behavior. */
 export type TripadvisorPlaceRequest = Schemas["Catalog_tripadvisor_place_Request"];
 
-/** Fields depend on the source listing. Unavailable optional fields may be omitted; no rating, price, or review text is inferred. */
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
 export type TripadvisorPlaceResult = Schemas["Catalog_tripadvisor_place_Result"];
 
 export type TripadvisorPlaceResponse = Schemas["Catalog_tripadvisor_place_Response"];
 
-/** Return complete Yelp business reviews by public business alias, with native sorting and page-based pagination. Keep language, sort_by, and limit unchanged when increasing page. */
+/** Return Yelp business reviews by alias or encoded business ID. Filter recommended reviews by text and ratings, or select not-recommended reviews with their separate offset. Keep filters, language, sorting, and limit unchanged when paginating. */
 export type YelpReviewsRequest = Schemas["Catalog_yelp_reviews_Request"];
 
-/** Fields depend on the source listing. Unavailable optional fields may be omitted; no rating, price, or review text is inferred. */
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
 export type YelpReviewsResult = Schemas["Catalog_yelp_reviews_Result"];
 
 export type YelpReviewsResponse = Schemas["Catalog_yelp_reviews_Response"];
 
-/** Retrieve Tripadvisor Reviews data with the existing PrismCrawl authentication, credits, and request-history behavior. */
+/** Retrieve native Tripadvisor reviews. Detailed sorting uses the source published-review order for restaurants, hotels, attractions and activity products. Source-confirmed unsupported sort/place combinations return HTTP 400 without charging. A detailed-review lookup that confirms the requested place is missing returns HTTP 200 with empty results and place_not_found metadata, and costs one credit. Challenges and ambiguous source responses remain errors. */
 export type TripadvisorReviewsRequest = Schemas["Catalog_tripadvisor_reviews_Request"];
 
-/** Fields depend on the source listing. Unavailable optional fields may be omitted; no rating, price, or review text is inferred. */
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
 export type TripadvisorReviewsResult = Schemas["Catalog_tripadvisor_reviews_Result"];
 
 export type TripadvisorReviewsResponse = Schemas["Catalog_tripadvisor_reviews_Response"];
 
-/** Retrieve Google Play Apps data with the existing PrismCrawl authentication, credits, and request-history behavior. */
+/** Browse categories or search Google Play Apps data with the existing PrismCrawl authentication, credits, and request-history behavior. */
 export type GooglePlayAppsRequest = Schemas["Catalog_google_play_apps_Request"];
 
-/** Fields depend on the source listing. Unavailable optional fields may be omitted; no rating, price, or review text is inferred. */
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
 export type GooglePlayAppsResult = Schemas["Catalog_google_play_apps_Result"];
 
 export type GooglePlayAppsResponse = Schemas["Catalog_google_play_apps_Response"];
@@ -196,23 +218,23 @@ export type GooglePlayAppsResponse = Schemas["Catalog_google_play_apps_Response"
 /** Browse Google Play game categories or search a query, returning only candidates whose first-party product metadata identifies a game. Query pages can be shorter than the requested limit; follow next_page_token when present. */
 export type GooglePlayGamesRequest = Schemas["Catalog_google_play_games_Request"];
 
-/** Fields depend on the source listing. Unavailable optional fields may be omitted; no rating, price, or review text is inferred. */
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
 export type GooglePlayGamesResult = Schemas["Catalog_google_play_games_Result"];
 
 export type GooglePlayGamesResponse = Schemas["Catalog_google_play_games_Response"];
 
-/** Retrieve Google Play Books data with the existing PrismCrawl authentication, credits, and request-history behavior. */
+/** Browse categories or search Google Play Books data with the existing PrismCrawl authentication, credits, and request-history behavior. */
 export type GooglePlayBooksRequest = Schemas["Catalog_google_play_books_Request"];
 
-/** Fields depend on the source listing. Unavailable optional fields may be omitted; no rating, price, or review text is inferred. */
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
 export type GooglePlayBooksResult = Schemas["Catalog_google_play_books_Result"];
 
 export type GooglePlayBooksResponse = Schemas["Catalog_google_play_books_Response"];
 
-/** Retrieve Google Play Movies data with the existing PrismCrawl authentication, credits, and request-history behavior. */
+/** Browse categories or search Google Play Movies data with the existing PrismCrawl authentication, credits, and request-history behavior. */
 export type GooglePlayMoviesRequest = Schemas["Catalog_google_play_movies_Request"];
 
-/** Fields depend on the source listing. Unavailable optional fields may be omitted; no rating, price, or review text is inferred. */
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
 export type GooglePlayMoviesResult = Schemas["Catalog_google_play_movies_Result"];
 
 export type GooglePlayMoviesResponse = Schemas["Catalog_google_play_movies_Response"];
@@ -220,7 +242,7 @@ export type GooglePlayMoviesResponse = Schemas["Catalog_google_play_movies_Respo
 /** Retrieve Google Play Product data with the existing PrismCrawl authentication, credits, and request-history behavior. */
 export type GooglePlayProductRequest = Schemas["Catalog_google_play_product_Request"];
 
-/** Fields depend on the source listing. Unavailable optional fields may be omitted; no rating, price, or review text is inferred. */
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
 export type GooglePlayProductResult = Schemas["Catalog_google_play_product_Result"];
 
 export type GooglePlayProductResponse = Schemas["Catalog_google_play_product_Response"];
@@ -228,15 +250,15 @@ export type GooglePlayProductResponse = Schemas["Catalog_google_play_product_Res
 /** Retrieve Google Play Reviews data with the existing PrismCrawl authentication, credits, and request-history behavior. */
 export type GooglePlayReviewsRequest = Schemas["Catalog_google_play_reviews_Request"];
 
-/** Fields depend on the source listing. Unavailable optional fields may be omitted; no rating, price, or review text is inferred. */
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
 export type GooglePlayReviewsResult = Schemas["Catalog_google_play_reviews_Result"];
 
 export type GooglePlayReviewsResponse = Schemas["Catalog_google_play_reviews_Response"];
 
-/** Search Apple App Store apps and paginate the source's returned inventory of up to 200 results. Continuation is scoped to the query and fails if the ordered source inventory changes. */
+/** Search Apple App Store apps, optionally by developer name, genre, or explicit-content setting. Filter and paginate Apple’s returned inventory of up to 200 apps. Continuations bind the filters and ordered inventory; source ranking changes end pagination. */
 export type AppleAppStoreRequest = Schemas["Catalog_apple_app_store_Request"];
 
-/** Fields depend on the source listing. Unavailable optional fields may be omitted; no rating, price, or review text is inferred. */
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
 export type AppleAppStoreResult = Schemas["Catalog_apple_app_store_Result"];
 
 export type AppleAppStoreResponse = Schemas["Catalog_apple_app_store_Response"];
@@ -244,7 +266,7 @@ export type AppleAppStoreResponse = Schemas["Catalog_apple_app_store_Response"];
 /** Retrieve Apple App Store Product data with the existing PrismCrawl authentication, credits, and request-history behavior. */
 export type AppleAppStoreProductRequest = Schemas["Catalog_apple_app_store_product_Request"];
 
-/** Fields depend on the source listing. Unavailable optional fields may be omitted; no rating, price, or review text is inferred. */
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
 export type AppleAppStoreProductResult = Schemas["Catalog_apple_app_store_product_Result"];
 
 export type AppleAppStoreProductResponse = Schemas["Catalog_apple_app_store_product_Response"];
@@ -252,23 +274,31 @@ export type AppleAppStoreProductResponse = Schemas["Catalog_apple_app_store_prod
 /** Retrieve Apple App Store Reviews data with the existing PrismCrawl authentication, credits, and request-history behavior. */
 export type AppleAppStoreReviewsRequest = Schemas["Catalog_apple_app_store_reviews_Request"];
 
-/** Fields depend on the source listing. Unavailable optional fields may be omitted; no rating, price, or review text is inferred. */
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
 export type AppleAppStoreReviewsResult = Schemas["Catalog_apple_app_store_reviews_Result"];
 
 export type AppleAppStoreReviewsResponse = Schemas["Catalog_apple_app_store_reviews_Response"];
 
-/** Look up a product_id returned by Google Shopping using the original Shopping query. Returns the current product details, merchant offers, images, and specifications supplied by Google. A recognized unavailable product returns a successful, billable empty response with search_parameters.product_unavailable:true and product_unavailable_reason:not_in_results when the ID is absent from the current query's Shopping cards, or unavailable when the product viewer reports no details. Retrieved product details are also successful and billable when offers are out of stock or absent. */
+/** Retrieve a Google product by id, optionally with its original query, or by page_token returned by Google Shopping. Product tokens retain the exact source offer and locale. Returns native product details, merchant offers, images and specifications. */
 export type GoogleShoppingProductRequest = Schemas["Catalog_google_shopping_product_Request"];
 
-/** Fields depend on the source listing. Unavailable optional fields may be omitted; no rating, price, or review text is inferred. */
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
 export type GoogleShoppingProductResult = Schemas["Catalog_google_shopping_product_Result"];
 
 export type GoogleShoppingProductResponse = Schemas["Catalog_google_shopping_product_Response"];
 
-/** Retrieve complete Google Maps review text in relevance order with native continuation tokens. If Google restricts access and supplies a verified place preview, the response marks that subset with access_limited and pagination_limited and omits the next-page token. Restrictions without a verified preview return an upstream error. */
+/** Retrieve the exact Google product offer selected by a Shopping result token, with optional expanded stores and source-bound store pagination. Serving identities remain private to each request. */
+export type GoogleImmersiveProductRequest = Schemas["Catalog_google_immersive_product_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleImmersiveProductResult = Schemas["Catalog_google_immersive_product_Result"];
+
+export type GoogleImmersiveProductResponse = Schemas["Catalog_google_immersive_product_Response"];
+
+/** Retrieve Google Maps reviews by place ID or hexadecimal data ID, with sorting, topic or text filters and continuation tokens. */
 export type GoogleMapsReviewsRequest = Schemas["Catalog_google_maps_reviews_Request"];
 
-/** Fields depend on the source listing. Unavailable optional fields may be omitted; no rating, price, or review text is inferred. */
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
 export type GoogleMapsReviewsResult = Schemas["Catalog_google_maps_reviews_Result"];
 
 export type GoogleMapsReviewsResponse = Schemas["Catalog_google_maps_reviews_Response"];
@@ -276,16 +306,816 @@ export type GoogleMapsReviewsResponse = Schemas["Catalog_google_maps_reviews_Res
 /** Retrieve full Google contributor reviews in newest order, with pagination over the first 200 reviews. */
 export type GoogleContributorReviewsRequest = Schemas["Catalog_google_contributor_reviews_Request"];
 
-/** Fields depend on the source listing. Unavailable optional fields may be omitted; no rating, price, or review text is inferred. */
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
 export type GoogleContributorReviewsResult = Schemas["Catalog_google_contributor_reviews_Result"];
 
 export type GoogleContributorReviewsResponse = Schemas["Catalog_google_contributor_reviews_Response"];
 
+/** Search public YouTube videos, channels, and playlists. Results retain the native source order and page size. */
+export type YoutubeRequest = Schemas["Catalog_youtube_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type YoutubeResult = Schemas["Catalog_youtube_Result"];
+
+export type YoutubeResponse = Schemas["Catalog_youtube_Response"];
+
+/** Read a public channel profile and videos, shorts, streams, podcasts, playlists, posts, or channel search results. Native sorting and pagination retain source order; about adds channel details. Use a channel ID or @handle. A source-confirmed missing channel returns HTTP 200 with empty results and search_parameters.channel_not_found=true, costing one credit. Unknown retrieval failures remain errors and are uncharged. */
+export type YoutubeChannelRequest = Schemas["Catalog_youtube_channel_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type YoutubeChannelResult = Schemas["Catalog_youtube_channel_Result"];
+
+export type YoutubeChannelResponse = Schemas["Catalog_youtube_channel_Response"];
+
+/** Read public video metadata, related videos, and comments. Follow the separate comments, sorting, related-video, and reply tokens using next_page_token with the same video ID and locale. */
+export type YoutubeVideoRequest = Schemas["Catalog_youtube_video_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type YoutubeVideoResult = Schemas["Catalog_youtube_video_Result"];
+
+export type YoutubeVideoResponse = Schemas["Catalog_youtube_video_Response"];
+
+/** Search Zillow listings using a city/neighborhood/postal query, a region ID, or map bounds. Filter sale, rental and sold inventory by property details, amenities and listing selections. Filter and location selections must be retained by the source; omitted optional listing details remain zero values. Query and region_id are mutually exclusive. Rental-only and sale-only filters require the corresponding status_type. */
+export type ZillowRequest = Schemas["Catalog_zillow_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type ZillowResult = Schemas["Catalog_zillow_Result"];
+
+export type ZillowResponse = Schemas["Catalog_zillow_Response"];
+
+/** Retrieve native Amazon Autocomplete data. */
+export type AmazonAutocompleteRequest = Schemas["Catalog_amazon_autocomplete_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type AmazonAutocompleteResult = Schemas["Catalog_amazon_autocomplete_Result"];
+
+export type AmazonAutocompleteResponse = Schemas["Catalog_amazon_autocomplete_Response"];
+
+/** Retrieve native Amazon Product data. Confirmed missing products return HTTP 200 with empty results and search_parameters.product_not_found=true, costing one credit. Malformed requests and retrieval failures are uncharged. */
+export type AmazonProductRequest = Schemas["Catalog_amazon_product_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type AmazonProductResult = Schemas["Catalog_amazon_product_Result"];
+
+export type AmazonProductResponse = Schemas["Catalog_amazon_product_Response"];
+
+/** Retrieve native Baidu Search data. */
+export type BaiduRequest = Schemas["Catalog_baidu_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type BaiduResult = Schemas["Catalog_baidu_Result"];
+
+export type BaiduResponse = Schemas["Catalog_baidu_Response"];
+
+/** Retrieve native Baidu News data. */
+export type BaiduNewsRequest = Schemas["Catalog_baidu_news_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type BaiduNewsResult = Schemas["Catalog_baidu_news_Result"];
+
+export type BaiduNewsResponse = Schemas["Catalog_baidu_news_Response"];
+
+/** Retrieve native Bing Images data. */
+export type BingImagesRequest = Schemas["Catalog_bing_images_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type BingImagesResult = Schemas["Catalog_bing_images_Result"];
+
+export type BingImagesResponse = Schemas["Catalog_bing_images_Response"];
+
+/** Retrieve native Bing News data. */
+export type BingNewsRequest = Schemas["Catalog_bing_news_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type BingNewsResult = Schemas["Catalog_bing_news_Result"];
+
+export type BingNewsResponse = Schemas["Catalog_bing_news_Response"];
+
+/** Retrieve native Bing Videos data. */
+export type BingVideosRequest = Schemas["Catalog_bing_videos_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type BingVideosResult = Schemas["Catalog_bing_videos_Result"];
+
+export type BingVideosResponse = Schemas["Catalog_bing_videos_Response"];
+
+/** Retrieve native Bing Shopping data. */
+export type BingShoppingRequest = Schemas["Catalog_bing_shopping_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type BingShoppingResult = Schemas["Catalog_bing_shopping_Result"];
+
+export type BingShoppingResponse = Schemas["Catalog_bing_shopping_Response"];
+
+/** Retrieve native Bing Product data. */
+export type BingProductRequest = Schemas["Catalog_bing_product_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type BingProductResult = Schemas["Catalog_bing_product_Result"];
+
+export type BingProductResponse = Schemas["Catalog_bing_product_Response"];
+
+/** Retrieve native Bing Reverse Image data. */
+export type BingReverseImageRequest = Schemas["Catalog_bing_reverse_image_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type BingReverseImageResult = Schemas["Catalog_bing_reverse_image_Result"];
+
+export type BingReverseImageResponse = Schemas["Catalog_bing_reverse_image_Response"];
+
+/** Retrieve native Bing Copilot answers and citations. HTML output for streamed answers contains the assembled final page, citations, and completion metadata. */
+export type BingCopilotRequest = Schemas["Catalog_bing_copilot_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type BingCopilotResult = Schemas["Catalog_bing_copilot_Result"];
+
+export type BingCopilotResponse = Schemas["Catalog_bing_copilot_Response"];
+
+/** Retrieve native DuckDuckGo Light data. */
+export type DuckDuckGoLightRequest = Schemas["Catalog_duckduckgo_light_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type DuckDuckGoLightResult = Schemas["Catalog_duckduckgo_light_Result"];
+
+export type DuckDuckGoLightResponse = Schemas["Catalog_duckduckgo_light_Response"];
+
+/** Retrieve native DuckDuckGo News data. */
+export type DuckDuckGoNewsRequest = Schemas["Catalog_duckduckgo_news_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type DuckDuckGoNewsResult = Schemas["Catalog_duckduckgo_news_Result"];
+
+export type DuckDuckGoNewsResponse = Schemas["Catalog_duckduckgo_news_Response"];
+
+/** Retrieve native eBay Search data. */
+export type EbayRequest = Schemas["Catalog_ebay_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type EbayResult = Schemas["Catalog_ebay_Result"];
+
+export type EbayResponse = Schemas["Catalog_ebay_Response"];
+
+/** Retrieve native eBay Product data. A native missing-item page returned at the exact requested item URL completes with HTTP 200, empty results, product_not_found and source_status metadata, and costs one credit. Challenges, contradictory identities, and unrelated redirects remain errors. */
+export type EbayProductRequest = Schemas["Catalog_ebay_product_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type EbayProductResult = Schemas["Catalog_ebay_product_Result"];
+
+export type EbayProductResponse = Schemas["Catalog_ebay_product_Response"];
+
+/** Look up an eBay seller profile, or set type to user/store to retrieve its inventory and source pagination. Confirmed missing stores return HTTP 200 with empty results and search_parameters.store_not_found=true, costing one credit. Malformed requests and retrieval failures are uncharged. */
+export type EbaySellerRequest = Schemas["Catalog_ebay_seller_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type EbaySellerResult = Schemas["Catalog_ebay_seller_Result"];
+
+export type EbaySellerResponse = Schemas["Catalog_ebay_seller_Response"];
+
+/** Retrieve public Facebook profile data by username or numeric ID. Directory routes such as pages are not profile IDs. A source-confirmed unavailable profile returns an empty results array with search_parameters.profile_unavailable=true; login walls without that confirmation remain errors. */
+export type FacebookProfileRequest = Schemas["Catalog_facebook_profile_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type FacebookProfileResult = Schemas["Catalog_facebook_profile_Result"];
+
+export type FacebookProfileResponse = Schemas["Catalog_facebook_profile_Response"];
+
+/** Retrieve a public Instagram profile and its posts. Continue the source-backed post feed with next_page_token. Confirmed missing profiles return HTTP 200 with empty results and search_parameters.profile_not_found=true, costing one credit. Malformed requests and retrieval failures are uncharged. */
+export type InstagramProfileRequest = Schemas["Catalog_instagram_profile_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type InstagramProfileResult = Schemas["Catalog_instagram_profile_Result"];
+
+export type InstagramProfileResponse = Schemas["Catalog_instagram_profile_Response"];
+
+/** Retrieve native Home Depot Search data. */
+export type HomeDepotRequest = Schemas["Catalog_home_depot_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type HomeDepotResult = Schemas["Catalog_home_depot_Result"];
+
+export type HomeDepotResponse = Schemas["Catalog_home_depot_Response"];
+
+/** Retrieve native Home Depot Product data. */
+export type HomeDepotProductRequest = Schemas["Catalog_home_depot_product_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type HomeDepotProductResult = Schemas["Catalog_home_depot_product_Result"];
+
+export type HomeDepotProductResponse = Schemas["Catalog_home_depot_product_Response"];
+
+/** Retrieve native Home Depot Reviews data. */
+export type HomeDepotReviewsRequest = Schemas["Catalog_home_depot_reviews_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type HomeDepotReviewsResult = Schemas["Catalog_home_depot_reviews_Result"];
+
+export type HomeDepotReviewsResponse = Schemas["Catalog_home_depot_reviews_Response"];
+
+/** Retrieve native Naver Search data. */
+export type NaverRequest = Schemas["Catalog_naver_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type NaverResult = Schemas["Catalog_naver_Result"];
+
+export type NaverResponse = Schemas["Catalog_naver_Response"];
+
+/** Retrieve native Naver AI Overview data. */
+export type NaverAiOverviewRequest = Schemas["Catalog_naver_ai_overview_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type NaverAiOverviewResult = Schemas["Catalog_naver_ai_overview_Result"];
+
+export type NaverAiOverviewResponse = Schemas["Catalog_naver_ai_overview_Response"];
+
+/** Retrieve a Brave AI Mode answer and its sources. Send a new query with next_page_token to continue the conversation, keeping localization settings unchanged. Public proof and AI streaming can require up to 40 seconds on CPU-constrained runtimes. */
+export type BraveAiModeRequest = Schemas["Catalog_brave_ai_mode_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type BraveAiModeResult = Schemas["Catalog_brave_ai_mode_Result"];
+
+export type BraveAiModeResponse = Schemas["Catalog_brave_ai_mode_Response"];
+
+/** Retrieve native OpenTable restaurant reviews and source-reported pagination. Bounded regional acquisition preserves the requested restaurant identity and English presentation. Confirmed missing restaurants return HTTP 200 with empty results and search_parameters.restaurant_not_found=true, costing one credit. Malformed requests and retrieval failures are uncharged. */
+export type OpentableReviewsRequest = Schemas["Catalog_opentable_reviews_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type OpentableReviewsResult = Schemas["Catalog_opentable_reviews_Result"];
+
+export type OpentableReviewsResponse = Schemas["Catalog_opentable_reviews_Response"];
+
+/** Retrieve native Walmart Search data. */
+export type WalmartRequest = Schemas["Catalog_walmart_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type WalmartResult = Schemas["Catalog_walmart_Result"];
+
+export type WalmartResponse = Schemas["Catalog_walmart_Response"];
+
+/** Retrieve native Walmart Product data. A native Item404 page or an explicit item-service not-found error bound to the exact requested product returns HTTP 200 with empty results, product_not_found and source_status metadata, and costs one credit. source_status preserves the HTTP status of the confirming source, which can be 200 or 404. Identified out-of-stock products remain valid results. Empty reviews, challenges and conflicting source identities do not establish absence; failed store selection remains an error. */
+export type WalmartProductRequest = Schemas["Catalog_walmart_product_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type WalmartProductResult = Schemas["Catalog_walmart_product_Result"];
+
+export type WalmartProductResponse = Schemas["Catalog_walmart_product_Response"];
+
+/** Retrieve offers from sellers for a Walmart US item in the selected store session. Requires the item ID and store ID. */
+export type WalmartProductSellersRequest = Schemas["Catalog_walmart_product_sellers_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type WalmartProductSellersResult = Schemas["Catalog_walmart_product_sellers_Result"];
+
+export type WalmartProductSellersResponse = Schemas["Catalog_walmart_product_sellers_Response"];
+
+/** Retrieve native Walmart Reviews data. */
+export type WalmartReviewsRequest = Schemas["Catalog_walmart_reviews_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type WalmartReviewsResult = Schemas["Catalog_walmart_reviews_Result"];
+
+export type WalmartReviewsResponse = Schemas["Catalog_walmart_reviews_Response"];
+
+/** Retrieve native Yahoo Search data. */
+export type YahooRequest = Schemas["Catalog_yahoo_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type YahooResult = Schemas["Catalog_yahoo_Result"];
+
+export type YahooResponse = Schemas["Catalog_yahoo_Response"];
+
+/** Retrieve native Yahoo Images data. */
+export type YahooImagesRequest = Schemas["Catalog_yahoo_images_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type YahooImagesResult = Schemas["Catalog_yahoo_images_Result"];
+
+export type YahooImagesResponse = Schemas["Catalog_yahoo_images_Response"];
+
+/** Retrieve native Yahoo Videos data. */
+export type YahooVideosRequest = Schemas["Catalog_yahoo_videos_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type YahooVideosResult = Schemas["Catalog_yahoo_videos_Result"];
+
+export type YahooVideosResponse = Schemas["Catalog_yahoo_videos_Response"];
+
+/** Retrieve native Yandex Search data. Responses identify the source domain, interface language, and regional context; native regional defaults can affect ranking. */
+export type YandexRequest = Schemas["Catalog_yandex_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type YandexResult = Schemas["Catalog_yandex_Result"];
+
+export type YandexResponse = Schemas["Catalog_yandex_Response"];
+
+/** Retrieve native Yandex Images data. */
+export type YandexImagesRequest = Schemas["Catalog_yandex_images_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type YandexImagesResult = Schemas["Catalog_yandex_images_Result"];
+
+export type YandexImagesResponse = Schemas["Catalog_yandex_images_Response"];
+
+/** Retrieve native Yandex Videos data. */
+export type YandexVideosRequest = Schemas["Catalog_yandex_videos_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type YandexVideosResult = Schemas["Catalog_yandex_videos_Result"];
+
+export type YandexVideosResponse = Schemas["Catalog_yandex_videos_Response"];
+
+/** Return a Yelp business by alias or encoded business ID, optionally including its full menu. */
+export type YelpPlaceRequest = Schemas["Catalog_yelp_place_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type YelpPlaceResult = Schemas["Catalog_yelp_place_Result"];
+
+export type YelpPlaceResponse = Schemas["Catalog_yelp_place_Response"];
+
+/** Search flights using departure_id, arrival_id, and outbound_date. Omit return_date for one-way travel. All itinerary dates, including return and multi-city legs, must be within 330 days of the current UTC date. Supports up to nine travelers; each infant on a lap requires an adult. Use flight autocomplete to resolve airport IDs. Airport/location IDs may be comma-separated. Supports airline, schedule, duration, price, emissions, baggage and fare filters. Use type 3 and multi_city_json for multiple legs. */
+export type GoogleFlightsRequest = Schemas["Catalog_google_flights_Request"] & ({ departure_id: NonNullable<Schemas["Catalog_google_flights_Request"]["departure_id"]>; arrival_id: NonNullable<Schemas["Catalog_google_flights_Request"]["arrival_id"]>; outbound_date: NonNullable<Schemas["Catalog_google_flights_Request"]["outbound_date"]> } | { type: NonNullable<Schemas["Catalog_google_flights_Request"]["type"]>; multi_city_json: NonNullable<Schemas["Catalog_google_flights_Request"]["multi_city_json"]> });
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleFlightsResult = Schemas["Catalog_google_flights_Result"];
+
+export type GoogleFlightsResponse = Schemas["Catalog_google_flights_Response"];
+
+/** Retrieve Google Flights Autocomplete data. */
+export type GoogleFlightsAutocompleteRequest = Schemas["Catalog_google_flights_autocomplete_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleFlightsAutocompleteResult = Schemas["Catalog_google_flights_autocomplete_Result"];
+
+export type GoogleFlightsAutocompleteResponse = Schemas["Catalog_google_flights_autocomplete_Response"];
+
+/** Retrieve Google Hotels data. */
+export type GoogleHotelsRequest = Schemas["Catalog_google_hotels_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleHotelsResult = Schemas["Catalog_google_hotels_Result"];
+
+export type GoogleHotelsResponse = Schemas["Catalog_google_hotels_Response"];
+
+/** Retrieve Google Hotels Autocomplete data. */
+export type GoogleHotelsAutocompleteRequest = Schemas["Catalog_google_hotels_autocomplete_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleHotelsAutocompleteResult = Schemas["Catalog_google_hotels_autocomplete_Result"];
+
+export type GoogleHotelsAutocompleteResponse = Schemas["Catalog_google_hotels_autocomplete_Response"];
+
+/** Retrieve hotel overview photos and categorized galleries. Each category has its own continuation token; initial category pages contain up to 30 images and subsequent pages honor limit up to 100. */
+export type GoogleHotelsPhotosRequest = Schemas["Catalog_google_hotels_photos_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleHotelsPhotosResult = Schemas["Catalog_google_hotels_photos_Result"];
+
+export type GoogleHotelsPhotosResponse = Schemas["Catalog_google_hotels_photos_Response"];
+
+/** Retrieve Google Hotels Reviews data. */
+export type GoogleHotelsReviewsRequest = Schemas["Catalog_google_hotels_reviews_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleHotelsReviewsResult = Schemas["Catalog_google_hotels_reviews_Result"];
+
+export type GoogleHotelsReviewsResponse = Schemas["Catalog_google_hotels_reviews_Response"];
+
+/** Retrieve Google Maps Directions data. */
+export type GoogleMapsDirectionsRequest = Schemas["Catalog_google_maps_directions_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleMapsDirectionsResult = Schemas["Catalog_google_maps_directions_Result"];
+
+export type GoogleMapsDirectionsResponse = Schemas["Catalog_google_maps_directions_Response"];
+
+/** Retrieve Apple Maps Places data. */
+export type AppleMapsPlaceRequest = Schemas["Catalog_apple_maps_place_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type AppleMapsPlaceResult = Schemas["Catalog_apple_maps_place_Result"];
+
+export type AppleMapsPlaceResponse = Schemas["Catalog_apple_maps_place_Response"];
+
+/** Retrieve Google Light Search using its native source data. */
+export type GoogleLightRequest = Schemas["Catalog_google_light_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleLightResult = Schemas["Catalog_google_light_Result"];
+
+export type GoogleLightResponse = Schemas["Catalog_google_light_Response"];
+
+/** Retrieve Google AI Mode answers, with optional image questions and encrypted client-carried follow-up conversations. */
+export type GoogleAiModeRequest = Schemas["Catalog_google_ai_mode_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleAiModeResult = Schemas["Catalog_google_ai_mode_Result"];
+
+export type GoogleAiModeResponse = Schemas["Catalog_google_ai_mode_Response"];
+
+/** Retrieve an AI Overview by query or by the short-lived ai_overview.page_token supplied by Google Search. A valid page without an overview returns feature_available=false. */
+export type GoogleAiOverviewRequest = Schemas["Catalog_google_ai_overview_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleAiOverviewResult = Schemas["Catalog_google_ai_overview_Result"];
+
+export type GoogleAiOverviewResponse = Schemas["Catalog_google_ai_overview_Response"];
+
+/** Retrieve Google Search ad results. ads_available is false when the valid search page contains no ads. */
+export type GoogleAdsRequest = Schemas["Catalog_google_ads_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleAdsResult = Schemas["Catalog_google_ads_Result"];
+
+export type GoogleAdsResponse = Schemas["Catalog_google_ads_Response"];
+
+/** Find ad creatives by search text or one or more advertiser IDs. Filter by platform, region, date, format or political advertising; optionally retrieve advertiser details. */
+export type GoogleAdsTransparencyRequest = Omit<Schemas["Catalog_google_ads_transparency_Request"], "query" | "id"> & ({ query: NonNullable<Schemas["Catalog_google_ads_transparency_Request"]["query"]>; id?: never } | { query?: never; id: NonNullable<Schemas["Catalog_google_ads_transparency_Request"]["id"]> });
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleAdsTransparencyResult = Schemas["Catalog_google_ads_transparency_Result"];
+
+export type GoogleAdsTransparencyResponse = Schemas["Catalog_google_ads_transparency_Response"];
+
+/** Retrieve Google Autocomplete using its native source data. */
+export type GoogleAutocompleteRequest = Schemas["Catalog_google_autocomplete_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleAutocompleteResult = Schemas["Catalog_google_autocomplete_Result"];
+
+export type GoogleAutocompleteResponse = Schemas["Catalog_google_autocomplete_Response"];
+
+/** Retrieve actual event cards from Google Search. source_surface is search_events; events_available is false when no event pack is shown. The retired immersive Events surface and its pagination are not used. */
+export type GoogleEventsRequest = Schemas["Catalog_google_events_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleEventsResult = Schemas["Catalog_google_events_Result"];
+
+export type GoogleEventsResponse = Schemas["Catalog_google_events_Response"];
+
+/** Retrieve Google Finance using its native source data. */
+export type GoogleFinanceRequest = Schemas["Catalog_google_finance_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleFinanceResult = Schemas["Catalog_google_finance_Result"];
+
+export type GoogleFinanceResponse = Schemas["Catalog_google_finance_Response"];
+
+/** Retrieve Google Finance Markets using its native source data. */
+export type GoogleFinanceMarketsRequest = Schemas["Catalog_google_finance_markets_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleFinanceMarketsResult = Schemas["Catalog_google_finance_markets_Result"];
+
+export type GoogleFinanceMarketsResponse = Schemas["Catalog_google_finance_markets_Response"];
+
+/** Retrieve Google Forums using its native source data. */
+export type GoogleForumsRequest = Schemas["Catalog_google_forums_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleForumsResult = Schemas["Catalog_google_forums_Result"];
+
+export type GoogleForumsResponse = Schemas["Catalog_google_forums_Response"];
+
+/** Retrieve Google Images using its native source data. */
+export type GoogleImagesRequest = Schemas["Catalog_google_images_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleImagesResult = Schemas["Catalog_google_images_Result"];
+
+export type GoogleImagesResponse = Schemas["Catalog_google_images_Response"];
+
+/** Retrieve Google Images Light using its native source data. */
+export type GoogleImagesLightRequest = Schemas["Catalog_google_images_light_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleImagesLightResult = Schemas["Catalog_google_images_light_Result"];
+
+export type GoogleImagesLightResponse = Schemas["Catalog_google_images_light_Response"];
+
+/** Retrieve related image content using related_content_id from Google Images. The existing image URL id flow remains available for Lens visual matches. */
+export type GoogleImagesRelatedContentRequest = Schemas["Catalog_google_images_related_content_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleImagesRelatedContentResult = Schemas["Catalog_google_images_related_content_Result"];
+
+export type GoogleImagesRelatedContentResponse = Schemas["Catalog_google_images_related_content_Response"];
+
+/** Retrieve Google Jobs using its native source data. Source-confirmed empty searches are successful, billable lookups; unsupported country inputs return HTTP 400 without charge. */
+export type GoogleJobsRequest = Schemas["Catalog_google_jobs_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleJobsResult = Schemas["Catalog_google_jobs_Result"];
+
+export type GoogleJobsResponse = Schemas["Catalog_google_jobs_Response"];
+
+/** Retrieve a selected job using listing_token from Google Jobs in id. Keep the source locale. Employer ratings are included when the source provides them. */
+export type GoogleJobsListingRequest = Schemas["Catalog_google_jobs_listing_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleJobsListingResult = Schemas["Catalog_google_jobs_listing_Result"];
+
+export type GoogleJobsListingResponse = Schemas["Catalog_google_jobs_listing_Response"];
+
+/** Find image matches with Google Lens. Supply either a public HTTPS image URL in id or image_base64 for direct image upload. Optional query refines all or visual_matches searches. */
+export type GoogleLensRequest = Schemas["Catalog_google_lens_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleLensResult = Schemas["Catalog_google_lens_Result"];
+
+export type GoogleLensResponse = Schemas["Catalog_google_lens_Response"];
+
+/** Retrieve Google Local using its native source data. */
+export type GoogleLocalRequest = Schemas["Catalog_google_local_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleLocalResult = Schemas["Catalog_google_local_Result"];
+
+export type GoogleLocalResponse = Schemas["Catalog_google_local_Response"];
+
+/** Search Google Local Services sponsored providers or select a provider profile using its cid/bid/pid tuple. Supports named locations and geographic city or district CIDs. */
+export type GoogleLocalServicesRequest = Schemas["Catalog_google_local_services_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleLocalServicesResult = Schemas["Catalog_google_local_services_Result"];
+
+export type GoogleLocalServicesResponse = Schemas["Catalog_google_local_services_Response"];
+
+/** Search news by query, or browse current headlines and native topics, publishers, sections and stories. Queries with a site: operator require a supported Google News country/language edition (for example us/en, ae/ar or ca/fr); unavailable pairs such as ae/en are rejected before searching. These queries support the first desktop page without page, safe or time_range refinements. Ordinary keyword searches retain independent country and language controls. */
+export type GoogleNewsRequest = Schemas["Catalog_google_news_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleNewsResult = Schemas["Catalog_google_news_Result"];
+
+export type GoogleNewsResponse = Schemas["Catalog_google_news_Response"];
+
+/** Retrieve Google News Light using its native source data. The site: operator is unsupported; use /v1/google/news for site-filtered news queries. */
+export type GoogleNewsLightRequest = Schemas["Catalog_google_news_light_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleNewsLightResult = Schemas["Catalog_google_news_light_Result"];
+
+export type GoogleNewsLightResponse = Schemas["Catalog_google_news_light_Response"];
+
+/** Retrieve Google Patents using its native source data. */
+export type GooglePatentsRequest = Schemas["Catalog_google_patents_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GooglePatentsResult = Schemas["Catalog_google_patents_Result"];
+
+export type GooglePatentsResponse = Schemas["Catalog_google_patents_Response"];
+
+/** Retrieve Google Patents Details using its native source data. */
+export type GooglePatentsDetailsRequest = Schemas["Catalog_google_patents_details_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GooglePatentsDetailsResult = Schemas["Catalog_google_patents_details_Result"];
+
+export type GooglePatentsDetailsResponse = Schemas["Catalog_google_patents_details_Response"];
+
+/** Retrieve People Also Ask questions for query, or expand a returned next_page_token. Individual result tokens select that question. */
+export type GoogleRelatedQuestionsRequest = Schemas["Catalog_google_related_questions_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleRelatedQuestionsResult = Schemas["Catalog_google_related_questions_Result"];
+
+export type GoogleRelatedQuestionsResponse = Schemas["Catalog_google_related_questions_Response"];
+
+/** Retrieve reverse-image matches for a public HTTPS image URL in id, with optional text refinement, localization, safe search and source filters. Offsets select within the native result window; responses mark pagination_limited, and offsets beyond a nonempty window return 400. */
+export type GoogleReverseImageRequest = Schemas["Catalog_google_reverse_image_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleReverseImageResult = Schemas["Catalog_google_reverse_image_Result"];
+
+export type GoogleReverseImageResponse = Schemas["Catalog_google_reverse_image_Response"];
+
+/** Retrieve Google Scholar using its native source data. */
+export type GoogleScholarRequest = Schemas["Catalog_google_scholar_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleScholarResult = Schemas["Catalog_google_scholar_Result"];
+
+export type GoogleScholarResponse = Schemas["Catalog_google_scholar_Response"];
+
+/** Retrieve author profiles and articles, individual publication details, or co-authors. */
+export type GoogleScholarAuthorRequest = Schemas["Catalog_google_scholar_author_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleScholarAuthorResult = Schemas["Catalog_google_scholar_author_Result"];
+
+export type GoogleScholarAuthorResponse = Schemas["Catalog_google_scholar_author_Response"];
+
+/** Search court opinions by query, or retrieve one opinion using case_id. Case details cannot be combined with search filters or pagination. */
+export type GoogleScholarCaseLawRequest = Schemas["Catalog_google_scholar_case_law_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleScholarCaseLawResult = Schemas["Catalog_google_scholar_case_law_Result"];
+
+export type GoogleScholarCaseLawResponse = Schemas["Catalog_google_scholar_case_law_Response"];
+
+/** Retrieve native Google Short Videos cards and source-reported continuation. Numeric pages use the native twelve-unit offset. */
+export type GoogleShortVideosRequest = Schemas["Catalog_google_short_videos_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleShortVideosResult = Schemas["Catalog_google_short_videos_Result"];
+
+export type GoogleShortVideosResponse = Schemas["Catalog_google_short_videos_Response"];
+
+/** Retrieve Google Sports using its native source data. */
+export type GoogleSportsRequest = Schemas["Catalog_google_sports_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleSportsResult = Schemas["Catalog_google_sports_Result"];
+
+export type GoogleSportsResponse = Schemas["Catalog_google_sports_Response"];
+
+/** Retrieve Google Trends data for one to five comma-separated terms. time_range accepts all, now 1-H, now 4-H, now 1-d, now 7-d, today 1-m, today 3-m, today 12-m, today 5-y, or an ordered YYYY-MM-DD date pair from 2004 through today. */
+export type GoogleTrendsRequest = Schemas["Catalog_google_trends_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleTrendsResult = Schemas["Catalog_google_trends_Result"];
+
+export type GoogleTrendsResponse = Schemas["Catalog_google_trends_Response"];
+
+/** Retrieve Google Trends Autocomplete using its native source data. */
+export type GoogleTrendsAutocompleteRequest = Schemas["Catalog_google_trends_autocomplete_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleTrendsAutocompleteResult = Schemas["Catalog_google_trends_autocomplete_Result"];
+
+export type GoogleTrendsAutocompleteResponse = Schemas["Catalog_google_trends_autocomplete_Response"];
+
+/** Retrieve Google Trends Trending Now using its native source data. */
+export type GoogleTrendsTrendingNowRequest = Schemas["Catalog_google_trends_trending_now_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleTrendsTrendingNowResult = Schemas["Catalog_google_trends_trending_now_Result"];
+
+export type GoogleTrendsTrendingNowResponse = Schemas["Catalog_google_trends_trending_now_Response"];
+
+/** Retrieve Google Videos using its native source data. */
+export type GoogleVideosRequest = Schemas["Catalog_google_videos_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleVideosResult = Schemas["Catalog_google_videos_Result"];
+
+export type GoogleVideosResponse = Schemas["Catalog_google_videos_Response"];
+
+/** Retrieve Google Videos Light using its native source data. */
+export type GoogleVideosLightRequest = Schemas["Catalog_google_videos_light_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleVideosLightResult = Schemas["Catalog_google_videos_light_Result"];
+
+export type GoogleVideosLightResponse = Schemas["Catalog_google_videos_light_Response"];
+
+/** Retrieve real catalog products, prices, merchants and ratings from the native Google Shopping surface. Responses identify source_surface as shopping and expose continuation only when the source supplies a next-page link. Returns organic products in results and sponsored offers in shopping_ads, including native destination and tracking URLs. Ad links are returned without being visited. */
+export type GoogleShoppingRequest = Schemas["Catalog_google_shopping_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleShoppingResult = Schemas["Catalog_google_shopping_Result"];
+
+export type GoogleShoppingResponse = Schemas["Catalog_google_shopping_Response"];
+
+/** Retrieve real catalog products, prices, merchants and ratings from the native Google Shopping surface. Responses identify source_surface as shopping and expose continuation only when the source supplies a next-page link. Returns organic products in results and sponsored offers in shopping_ads, including native destination and tracking URLs. Ad links are returned without being visited. */
+export type GoogleShoppingLightRequest = Schemas["Catalog_google_shopping_light_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleShoppingLightResult = Schemas["Catalog_google_shopping_light_Result"];
+
+export type GoogleShoppingLightResponse = Schemas["Catalog_google_shopping_light_Response"];
+
+/** Explore destinations and fares from one or more comma-separated airport or city IDs. Supports flexible months/durations, exact dates, destination regions, travel class, passenger counts, airlines, stops, baggage, price and duration filters. Specify arrival_id for flights to a selected destination. */
+export type GoogleTravelExploreRequest = Schemas["Catalog_google_travel_explore_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleTravelExploreResult = Schemas["Catalog_google_travel_explore_Result"];
+
+export type GoogleTravelExploreResponse = Schemas["Catalog_google_travel_explore_Response"];
+
+/** Find Google Flight Deals from one or more comma-separated airport or city IDs, optionally matching a natural-language trip request. Supports passenger counts, travel class, round or one-way travel, stops, airline, price and flight-duration filters. */
+export type GoogleFlightsDealsRequest = Schemas["Catalog_google_flights_deals_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleFlightsDealsResult = Schemas["Catalog_google_flights_deals_Result"];
+
+export type GoogleFlightsDealsResponse = Schemas["Catalog_google_flights_deals_Response"];
+
+/** Retrieve Google Maps query and place suggestions. */
+export type GoogleMapsAutocompleteRequest = Schemas["Catalog_google_maps_autocomplete_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleMapsAutocompleteResult = Schemas["Catalog_google_maps_autocomplete_Result"];
+
+export type GoogleMapsAutocompleteResponse = Schemas["Catalog_google_maps_autocomplete_Response"];
+
+/** Retrieve Google Maps place gallery photos with native continuation. */
+export type GoogleMapsPhotosRequest = Schemas["Catalog_google_maps_photos_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleMapsPhotosResult = Schemas["Catalog_google_maps_photos_Result"];
+
+export type GoogleMapsPhotosResponse = Schemas["Catalog_google_maps_photos_Response"];
+
+/** Retrieve Google Maps business posts, event details and links with native pagination. */
+export type GoogleMapsPostsRequest = Schemas["Catalog_google_maps_posts_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleMapsPostsResult = Schemas["Catalog_google_maps_posts_Result"];
+
+export type GoogleMapsPostsResponse = Schemas["Catalog_google_maps_posts_Response"];
+
+/** Search Airbnb stays with dates, guests, map bounds, property filters, prices, and pagination. */
+export type AirbnbRequest = Schemas["Catalog_airbnb_Request"] & ({ query: NonNullable<Schemas["Catalog_airbnb_Request"]["query"]> } | { map_bounds: NonNullable<Schemas["Catalog_airbnb_Request"]["map_bounds"]> });
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type AirbnbResult = Schemas["Catalog_airbnb_Result"];
+
+export type AirbnbResponse = Schemas["Catalog_airbnb_Response"];
+
+/** Retrieve trending Yahoo topics, related articles, videos, categories, milestones, and native continuation. */
+export type YahooTrendsRequest = Schemas["Catalog_yahoo_trends_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type YahooTrendsResult = Schemas["Catalog_yahoo_trends_Result"];
+
+export type YahooTrendsResponse = Schemas["Catalog_yahoo_trends_Response"];
+
+/** Retrieve source caption segments, timestamps, and available languages for a YouTube video. A corroborated missing video or source-confirmed unavailable caption track returns HTTP 200 with empty results and transcript_unavailable metadata, and costs one credit. Blocking, private-video admission, and unconfirmed source failures remain errors. */
+export type YoutubeVideoTranscriptRequest = Schemas["Catalog_youtube_video_transcript_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type YoutubeVideoTranscriptResult = Schemas["Catalog_youtube_video_transcript_Result"];
+
+export type YoutubeVideoTranscriptResponse = Schemas["Catalog_youtube_video_transcript_Response"];
+
+/** Retrieve news articles for a trending search. Use news_page_token from Trending Now. */
+export type GoogleTrendsNewsRequest = Schemas["Catalog_google_trends_news_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleTrendsNewsResult = Schemas["Catalog_google_trends_news_Result"];
+
+export type GoogleTrendsNewsResponse = Schemas["Catalog_google_trends_news_Response"];
+
+/** Retrieve citation formats and export links for a Scholar result. */
+export type GoogleScholarCiteRequest = Schemas["Catalog_google_scholar_cite_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleScholarCiteResult = Schemas["Catalog_google_scholar_cite_Result"];
+
+export type GoogleScholarCiteResponse = Schemas["Catalog_google_scholar_cite_Response"];
+
+/** Retrieve native filter groups, labels and query-bound shoprs selections from Google Shopping. */
+export type GoogleShoppingFiltersRequest = Schemas["Catalog_google_shopping_filters_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleShoppingFiltersResult = Schemas["Catalog_google_shopping_filters_Result"];
+
+export type GoogleShoppingFiltersResponse = Schemas["Catalog_google_shopping_filters_Response"];
+
+/** Retrieve an ad creative with regional serving history, funding identity and available text, image or video previews. */
+export type GoogleAdsTransparencyAdDetailsRequest = Schemas["Catalog_google_ads_transparency_ad_details_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleAdsTransparencyAdDetailsResult = Schemas["Catalog_google_ads_transparency_ad_details_Result"];
+
+export type GoogleAdsTransparencyAdDetailsResponse = Schemas["Catalog_google_ads_transparency_ad_details_Response"];
+
+/** Look up a Maps photo data ID to retrieve contributor information, location, date and available image metadata. Dates use YYYY-MM-DD. */
+export type GoogleMapsPhotoMetaRequest = Schemas["Catalog_google_maps_photo_meta_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleMapsPhotoMetaResult = Schemas["Catalog_google_maps_photo_meta_Result"];
+
+export type GoogleMapsPhotoMetaResponse = Schemas["Catalog_google_maps_photo_meta_Response"];
+
+/** Retrieve Google source information for a website URL or an About This Result request token, including available descriptions and source references. */
+export type GoogleAboutThisResultRequest = Schemas["Catalog_google_about_this_result_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleAboutThisResultResult = Schemas["Catalog_google_about_this_result_Result"];
+
+export type GoogleAboutThisResultResponse = Schemas["Catalog_google_about_this_result_Response"];
+
+/** Retrieve Naver AI Tab answers and continue a conversation with a follow-up question. */
+export type NaverAiModeRequest = Schemas["Catalog_naver_ai_mode_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type NaverAiModeResult = Schemas["Catalog_naver_ai_mode_Result"];
+
+export type NaverAiModeResponse = Schemas["Catalog_naver_ai_mode_Response"];
+
+/** Resolve up to 10 opaque Google Search links per request. Submit complete HTTPS /goto or opaque /url links; links may come from different searches. Results retain input order. One credit per completed batch, including when Google confirms none of the links can be resolved. Partial success returns the usable destinations. Operational failures without usable results return an uncharged error. */
+export type GoogleDecodeRequest = Schemas["Catalog_google_decode_Request"];
+
+/** All declared fields are present. Unavailable values use an empty string, zero, false, an empty array, or an object with zero-valued fields. These defaults do not establish a source rating, price, or availability. */
+export type GoogleDecodeResult = Schemas["Catalog_google_decode_Result"];
+
+export type GoogleDecodeResponse = Schemas["Catalog_google_decode_Response"];
+
 /** Search Google response. */
 export type GoogleSearchResponse = GoogleJsonSearchResponse | GoogleHtmlSearchResponse;
 
-/** Search Bing response. */
-export type MicrosoftSearchResponse = MicrosoftJsonSearchResponse | MicrosoftHtmlSearchResponse;
-
 /** Search Amazon response. */
 export type AmazonSearchResponse = AmazonJsonSearchResponse | AmazonHtmlSearchResponse;
+
+/** Search Bing response. */
+export type MicrosoftSearchResponse = MicrosoftJsonSearchResponse | MicrosoftHtmlSearchResponse;

@@ -55,6 +55,65 @@ if (process.argv.includes("--fetch")) {
 const spec = JSON.parse(await readFile(specUrl, "utf8"));
 const schemas = spec.components.schemas;
 
+// The published spec marks response constants as "value or zero default", which turns
+// data.format into `"" | "json"`. The API never sends an empty format, and the extra ""
+// breaks narrowing on it, so drop that alternative from format discriminators.
+const FORMATS = new Set(["json", "md", "html+br+base64"]);
+const visit = (node) => {
+  if (Array.isArray(node)) return node.forEach(visit);
+  if (!node || typeof node !== "object") return;
+  const format = node.properties?.format;
+  if (format?.anyOf?.length === 2 && format.anyOf.some((a) => a.const === "")) {
+    const kept = format.anyOf.find((a) => a.const !== "");
+    if (FORMATS.has(kept?.const)) node.properties.format = { ...kept, ...(format.description ? { description: format.description } : {}) };
+  }
+  Object.values(node).forEach(visit);
+};
+visit(schemas);
+
+// openapi-typescript can't express top-level "required one of" rules or if/then
+// dependencies, and turns some of them into `unknown`. Lift them out of the spec it
+// sees: the required-field rules become TypeScript unions below; if/then dependencies
+// are left to the API's validation, which returns a clear 400.
+const requiredRules = new Map();
+for (const [raw, schema] of Object.entries(schemas)) {
+  if (!schema.properties) continue;
+  for (const kind of ["oneOf", "anyOf"]) {
+    const alts = schema[kind];
+    if (!alts?.length || !alts.every((a) => Array.isArray(a.required) && Object.keys(a).every((k) => k === "required" || k === "properties"))) continue;
+    // Skip options that name fields the schema doesn't define (the API can't accept them).
+    const usable = alts.map((a) => a.required).filter((req) => req.every((k) => k in schema.properties));
+    if (usable.length > 1) requiredRules.set(raw, { exclusive: kind === "oneOf", alts: usable });
+    else if (usable.length === 1) schema.required = [...new Set([...(schema.required ?? []), ...usable[0]])];
+    delete schema[kind];
+  }
+  if (schema.allOf?.every((a) => "if" in a)) delete schema.allOf;
+  for (const kind of ["oneOf", "anyOf", "allOf"]) {
+    if (schema[kind]) throw new Error(`${raw}: unsupported top-level ${kind}; extend the generator`);
+  }
+}
+
+// Markdown (output: "md") and json_restrictor responses are typed by the request
+// through call overloads, so keep them out of each endpoint's default response type.
+const VARIANT_REFS = new Set(["MarkdownSearchResponse", "ProjectedSearchResponse", "MarkdownSearchData", "ProjectedSearchData"]);
+const isVariant = (alt) => alt?.$ref && VARIANT_REFS.has(refTarget(alt.$ref));
+const dropVariants = (schema) => {
+  for (const key of ["anyOf", "oneOf"]) {
+    if (!Array.isArray(schema?.[key])) continue;
+    const kept = schema[key].filter((alt) => !isVariant(alt));
+    if (kept.length !== schema[key].length) schema[key] = kept;
+  }
+};
+for (const item of Object.values(spec.paths)) {
+  const body = item.post?.responses?.["200"]?.content?.["application/json"]?.schema;
+  if (!body) continue;
+  dropVariants(body);
+  for (const alt of [body, ...(body.anyOf ?? []), ...(body.oneOf ?? [])]) {
+    const target = alt.$ref ? schemas[refTarget(alt.$ref)] : alt;
+    if (target && !VARIANT_REFS.has(refTarget(alt.$ref ?? ""))) dropVariants(target.properties?.data);
+  }
+}
+
 // Type aliases for every component schema, under readable names.
 const names = new Map();
 const taken = new Map();
@@ -114,14 +173,27 @@ const tree = { path: [], children: new Map(), endpoints: new Map() };
 for (const ep of endpoints) {
   let node = tree;
   for (const seg of ep.attrPath.slice(0, -1)) {
-    if (node.endpoints.has(seg)) throw new Error(`${seg} is both an endpoint and a namespace`);
     if (!node.children.has(seg)) node.children.set(seg, { path: [...node.path, seg], children: new Map(), endpoints: new Map() });
     node = node.children.get(seg);
   }
-  const leaf = ep.attrPath.at(-1);
-  if (node.children.has(leaf)) throw new Error(`${leaf} is both an endpoint and a namespace`);
-  node.endpoints.set(leaf, ep);
+  node.endpoints.set(ep.attrPath.at(-1), ep);
 }
+
+// An endpoint can also be the parent of other endpoints, e.g. google.images(...) and
+// google.images.light(...). Its children are attached to the endpoint function, so
+// they can't shadow the endpoint's own members or a function's built-in properties.
+const RESERVED_CHILD_NAMES = new Set(["get", "submit", "path", "pages", "name", "length", "call", "apply", "bind", "prototype"]);
+const checkChildren = (node) => {
+  for (const [name, child] of node.children) {
+    if (node.endpoints.has(name)) {
+      for (const key of [...child.children.keys(), ...child.endpoints.keys()]) {
+        if (RESERVED_CHILD_NAMES.has(key)) throw new Error(`${[...child.path, key].join(".")} collides with an endpoint member`);
+      }
+    }
+    checkChildren(child);
+  }
+};
+checkChildren(tree);
 
 const nsName = (node) => (node.path.length ? node.path.map(pascal).join("") + "Resource" : "Resources");
 const sorted = (map) => [...map.entries()].sort(([a], [b]) => a.localeCompare(b));
@@ -134,29 +206,30 @@ const endpointDoc = (ep, indent) =>
   jsdoc(`${ep.summary}: \`POST ${ep.path}\`\n\n${ep.description}`.trim(), indent);
 
 // src/openapi.gen.ts
-const ast = await openapiTS(specUrl, { alphabetize: false, defaultNonNullable: false });
+const ast = await openapiTS(spec, { alphabetize: false, defaultNonNullable: false });
 await writeFile(new URL("src/openapi.gen.ts", root), HEADER + "/* eslint-disable */\n" + astToString(ast));
 
 // src/types.gen.ts
 let types = HEADER + 'import type { components } from "./openapi.gen.js";\n\ntype Schemas = components["schemas"];\n';
-// openapi-typescript ignores a top-level `oneOf` that only lists required fields, e.g.
-// "exactly one of location or coordinates". Express it as a union so it's enforced.
-const exclusiveRequired = (raw) => {
-  const alts = schemas[raw].oneOf;
-  if (!alts?.length || !alts.every((a) => Object.keys(a).length === 1 && Array.isArray(a.required))) return null;
-  const keys = [...new Set(alts.flatMap((a) => a.required))];
+// Required-field rules lifted out of the spec above, as unions: "exactly one of location
+// or coordinates" (oneOf) or "query, or url" (anyOf).
+const requiredUnion = (raw) => {
+  const rule = requiredRules.get(raw);
+  if (!rule) return null;
   const base = `Schemas["${raw}"]`;
-  const variants = alts.map((a) => {
-    const fields = keys.map((k) =>
-      a.required.includes(k) ? `${k}: NonNullable<${base}["${k}"]>` : `${k}?: never`,
+  const keys = [...new Set(rule.alts.flat())];
+  const variants = rule.alts.map((required) => {
+    const fields = (rule.exclusive ? keys : required).map((k) =>
+      required.includes(k) ? `${k}: NonNullable<${base}["${k}"]>` : `${k}?: never`,
     );
     return `{ ${fields.join("; ")} }`;
   });
-  return `Omit<${base}, ${keys.map((k) => `"${k}"`).join(" | ")}> & (${variants.join(" | ")})`;
+  if (rule.exclusive) return `Omit<${base}, ${keys.map((k) => `"${k}"`).join(" | ")}> & (${variants.join(" | ")})`;
+  return `${base} & (${variants.join(" | ")})`;
 };
 
 for (const [raw, nice] of names) {
-  const expr = exclusiveRequired(raw) ?? `Schemas["${raw}"]`;
+  const expr = requiredUnion(raw) ?? `Schemas["${raw}"]`;
   types += "\n" + jsdoc(schemas[raw].description ?? "") + `export type ${nice} = ${expr};\n`;
 }
 for (const alias of extraAliases) {
@@ -174,10 +247,12 @@ for (const node of walk(tree)) {
   const label = node.path.length ? `${node.path.map(pascal).join(" ")} endpoints.` : "Every API namespace.";
   res += `\n/** ${label} */\nexport interface ${nsName(node)} {\n`;
   for (const [name, child] of sorted(node.children)) {
-    res += `  readonly ${name}: ${nsName(child)};\n`;
+    if (!node.endpoints.has(name)) res += `  readonly ${name}: ${nsName(child)};\n`;
   }
   for (const [name, ep] of sorted(node.endpoints)) {
-    res += endpointDoc(ep, "  ") + `  readonly ${name}: ${endpointType(ep)};\n`;
+    const child = node.children.get(name);
+    const type = child ? `${endpointType(ep)} & ${nsName(child)}` : endpointType(ep);
+    res += endpointDoc(ep, "  ") + `  readonly ${name}: ${type};\n`;
   }
   if (!node.path.length) {
     for (const [alias, target] of Object.entries(NAMESPACE_ALIASES)) {
@@ -190,10 +265,14 @@ for (const node of walk(tree)) {
 const literal = (node, indent) => {
   const inner = indent + "  ";
   const lines = [];
-  for (const [name, child] of sorted(node.children)) lines.push(`${inner}${name}: ${literal(child, inner)},`);
+  for (const [name, child] of sorted(node.children)) {
+    if (!node.endpoints.has(name)) lines.push(`${inner}${name}: ${literal(child, inner)},`);
+  }
   for (const [name, ep] of sorted(node.endpoints)) {
     const pagination = ep.pagination ? `, "${ep.pagination}"` : "";
-    lines.push(`${inner}${name}: createEndpoint(transport, "${ep.path}"${pagination}),`);
+    const endpoint = `createEndpoint<T.${ep.request}, T.${ep.response}>(transport, "${ep.path}"${pagination})`;
+    const child = node.children.get(name);
+    lines.push(`${inner}${name}: ${child ? `Object.assign(${endpoint}, ${literal(child, inner)})` : endpoint},`);
   }
   return `{\n${lines.join("\n")}\n${indent}}`;
 };

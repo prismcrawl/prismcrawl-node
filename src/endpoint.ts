@@ -1,5 +1,7 @@
+import { newIdempotencyKey, type AsyncReceipt } from "./async.js";
 import type { RequestOptions, Transport } from "./core.js";
 import { PrismCrawlError } from "./errors.js";
+import type { MarkdownSearchResponse, ProjectedSearchResponse } from "./types.gen.js";
 
 export interface CallOptions extends RequestOptions {
   /** Additional JSON fields to send, for parameters newer than this SDK. */
@@ -9,6 +11,14 @@ export interface CallOptions extends RequestOptions {
 export interface PageOptions extends CallOptions {
   /** Stop after this many pages. Defaults to no limit. */
   maxPages?: number;
+}
+
+export interface SubmitOptions extends CallOptions {
+  /**
+   * Identifies this submission so retries can't start a second search. Defaults to a new
+   * UUID. Reuse the same key, with identical parameters, to retry an uncertain submission.
+   */
+  idempotencyKey?: string;
 }
 
 export interface HistoryOptions extends RequestOptions {
@@ -22,24 +32,53 @@ export interface HistoryOptions extends RequestOptions {
 /** Metadata or an archived JSON artifact returned by `.get()`. */
 export type HistoryResponse = Record<string, unknown>;
 
+type WebhookFields = "webhook_url" | "webhook_secret";
+type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : never;
+
+/** Parameters for a synchronous call. Webhook fields are only accepted by `.submit()`. */
+export type SyncParams<Params> = DistributiveOmit<Params, WebhookFields>;
+
+/** Parameters for `.submit()`: the endpoint's parameters plus a required signed webhook. */
+export type AsyncParams<Params> = DistributiveOmit<Params, WebhookFields> & {
+  /** Public HTTPS URL that receives the completed response by POST. */
+  webhook_url: string;
+  /** Shared secret (32 to 256 printable ASCII characters) used to sign deliveries. */
+  webhook_secret: string;
+};
+
+type Markdown = { output: "md" };
+type Projected = { json_restrictor: string };
+
 export interface Endpoint<Params, Response> {
-  /** Run the request. */
-  (params: Params, options?: CallOptions): Promise<Response>;
-  /** Retrieve the archived source HTML of a previous request. */
+  /** `output: "md"` returns Markdown in `data.content`. */
+  (params: SyncParams<Params> & Markdown, options?: CallOptions): Promise<MarkdownSearchResponse>;
+  /** `json_restrictor` returns only the selected fields in `data.content`. */
+  (params: SyncParams<Params> & Projected, options?: CallOptions): Promise<ProjectedSearchResponse>;
+  (params: SyncParams<Params>, options?: CallOptions): Promise<Response>;
+  /**
+   * Run the request asynchronously. Resolves with a job receipt once PrismCrawl has
+   * accepted it; the completed response is POSTed to `webhook_url`, signed with
+   * `webhook_secret` (see `verifyWebhook`). A receipt doesn't mean the search succeeded.
+   */
+  submit(params: AsyncParams<Params>, options?: SubmitOptions): Promise<AsyncReceipt>;
+  /** Request history: metadata, or an archived artifact, for a past request to this endpoint. */
   get(requestId: string, options: HistoryOptions & { artifact: "html" }): Promise<string>;
-  /** Retrieve a previous request's metadata, or its archived JSON with `{ artifact: "json" }`. */
   get(requestId: string, options?: HistoryOptions & { artifact?: "json" }): Promise<HistoryResponse>;
-  /** The API path, such as `/v1/google/search`. */
+  /** API path, such as `/v1/google/search`. */
   readonly path: string;
 }
 
 export interface PaginatedEndpoint<Params, Response> extends Endpoint<Params, Response> {
-  /**
-   * Iterate over pages of results, following the response's pagination until
-   * `has_next_page` is false or `maxPages` pages have been fetched. Each page is a
-   * separate request and uses one credit.
-   */
-  pages(params: Params, options?: PageOptions): AsyncGenerator<Response, void, undefined>;
+  /** Yield each page, following the response's pagination until there are no more pages. */
+  pages(
+    params: SyncParams<Params> & Markdown,
+    options?: PageOptions,
+  ): AsyncGenerator<MarkdownSearchResponse, void, undefined>;
+  pages(
+    params: SyncParams<Params> & Projected,
+    options?: PageOptions,
+  ): AsyncGenerator<ProjectedSearchResponse, void, undefined>;
+  pages(params: SyncParams<Params>, options?: PageOptions): AsyncGenerator<Response, void, undefined>;
 }
 
 type Pagination = "token" | "page";
@@ -52,7 +91,6 @@ function buildBody(params: unknown, extraBody?: Record<string, unknown>): Record
   return { ...body, ...extraBody };
 }
 
-/** Request body for the page after `page`, or undefined when there are no more pages. */
 function nextBody(kind: Pagination, body: Record<string, unknown>, page: unknown): Record<string, unknown> | undefined {
   const content = (page as { data?: { content?: unknown } } | undefined)?.data?.content;
   if (typeof content !== "object" || content === null) return undefined;
@@ -81,6 +119,21 @@ export function createEndpoint<P, R>(
     return transport.request<R>({ ...request, method: "POST", path, body: buildBody(params, extraBody) });
   };
 
+  const submit = async (params: AsyncParams<P>, options: SubmitOptions = {}): Promise<AsyncReceipt> => {
+    const { idempotencyKey, ...rest } = options;
+    const { extraBody, request } = splitOptions(rest);
+    const key = idempotencyKey ?? (await newIdempotencyKey());
+    return transport.request<AsyncReceipt>({
+      ...request,
+      method: "POST",
+      path,
+      body: buildBody(params, extraBody),
+      headers: { ...request.headers, prefer: "respond-async", "idempotency-key": key },
+      // The key makes resubmitting safe: PrismCrawl returns the existing job instead of searching again.
+      idempotent: true,
+    });
+  };
+
   const get = (requestId: string, options: HistoryOptions = {}): Promise<unknown> => {
     const { artifact, ...request } = options;
     if (artifact !== undefined && artifact !== "json" && artifact !== "html") {
@@ -95,7 +148,7 @@ export function createEndpoint<P, R>(
     });
   };
 
-  const endpoint = Object.assign(call, { get, path }) as Endpoint<P, R>;
+  const endpoint = Object.assign(call, { submit, get, path }) as unknown as Endpoint<P, R>;
   if (!pagination) return endpoint;
 
   async function* pages(params: P, options: PageOptions = {}): AsyncGenerator<R, void, undefined> {
@@ -108,5 +161,5 @@ export function createEndpoint<P, R>(
       body = nextBody(pagination!, body, page);
     }
   }
-  return Object.assign(endpoint, { pages }) as PaginatedEndpoint<P, R>;
+  return Object.assign(endpoint, { pages }) as unknown as PaginatedEndpoint<P, R>;
 }

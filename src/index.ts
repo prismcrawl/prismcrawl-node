@@ -12,13 +12,25 @@ export {
   type RequestOptions,
 } from "./core.js";
 export type {
+  AsyncParams,
   CallOptions,
   Endpoint,
   HistoryOptions,
   HistoryResponse,
   PageOptions,
   PaginatedEndpoint,
+  SubmitOptions,
+  SyncParams,
 } from "./endpoint.js";
+export type {
+  AccountRequestsResource,
+  AccountResource,
+  RequestListPageOptions,
+  RequestListParams,
+  RequestListResponse,
+} from "./account.js";
+export type { AsyncJobStatus, AsyncReceipt, AsyncResource, AsyncWebhookStatus } from "./async.js";
+export { WebhookVerificationError, verifyWebhook, type VerifyWebhookOptions, type WebhookEvent } from "./webhooks.js";
 export {
   APIConnectionError,
   APIStatusError,

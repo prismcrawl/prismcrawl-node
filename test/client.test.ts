@@ -1,3 +1,4 @@
+import { createHmac } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { brotliCompressSync } from "node:zlib";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -16,7 +17,9 @@ import PrismCrawl, {
   PrismCrawlError,
   RateLimitError,
   VERSION,
+  WebhookVerificationError,
   decodeHtml,
+  verifyWebhook,
 } from "../src/index.js";
 import { ENDPOINTS } from "../src/resources.gen.js";
 
@@ -355,5 +358,134 @@ describe("coverage of the spec", () => {
       expect(mock.calls.at(-1)!.url.pathname).toBe(`${ep.path}/${REQUEST_ID}`);
       expect(typeof fn.pages === "function").toBe(ep.pagination !== null);
     }
+  });
+});
+
+describe("nested endpoints", () => {
+  it("calls a parent endpoint and its children", async () => {
+    const mock = mockFetch(ok());
+    const c = client(mock);
+    await c.google.images({ query: "q" });
+    expect(mock.calls.at(-1)!.url.pathname).toBe("/v1/google/images");
+    await c.google.images.light({ query: "q" });
+    expect(mock.calls.at(-1)!.url.pathname).toBe("/v1/google/images/light");
+    await c.google.ads.transparency.details({ id: "x" } as never);
+    expect(mock.calls.at(-1)!.url.pathname).toBe("/v1/google/ads/transparency/details");
+    expect(typeof c.google.images.pages).toBe("function");
+  });
+});
+
+describe("async requests", () => {
+  const JOB = `v3-${"a".repeat(96)}`;
+  const receipt = (status = "queued") =>
+    json(202, {
+      success: true,
+      request_id: REQUEST_ID,
+      data: {
+        job_id: JOB,
+        status,
+        status_url: `/v1/async/requests/${JOB}`,
+        result_url: `/v1/async/requests/${JOB}/result`,
+        accepted_at: "2026-11-20T00:00:00Z",
+        result_expires_at: null,
+        result_status: null,
+        error: null,
+        webhook: { status: "waiting", attempts: 0, response_status: 0 },
+      },
+    });
+  const webhook = { webhook_url: "https://example.com/hook", webhook_secret: "s".repeat(32) };
+
+  it("submits with Prefer and a generated Idempotency-Key", async () => {
+    const mock = mockFetch(receipt());
+    const result = await client(mock).google.search.submit({ query: "q", ...webhook });
+    expect(result.data.job_id).toBe(JOB);
+    expect(mock.header("prefer")).toBe("respond-async");
+    expect(mock.header("idempotency-key")).toMatch(/^[0-9a-f-]{36}$/);
+    expect(mock.body()).toEqual({ query: "q", ...webhook });
+  });
+
+  it("uses a caller's Idempotency-Key and resends it after a dropped connection", async () => {
+    const mock = mockFetch(new TypeError("socket hang up"), receipt());
+    await client(mock).yelp.reviews.submit({ id: "biz", ...webhook }, { idempotencyKey: "key-1" });
+    expect(mock.calls).toHaveLength(2);
+    expect(mock.header("idempotency-key", 0)).toBe("key-1");
+    expect(mock.header("idempotency-key", 1)).toBe("key-1");
+  });
+
+  it("reads job status and results", async () => {
+    const mock = mockFetch(receipt("running"), ok({ results: [] }));
+    const c = client(mock);
+    expect((await c.asyncJobs.status(JOB)).data.status).toBe("running");
+    expect(mock.calls.at(-1)!.url.pathname).toBe(`/v1/async/requests/${JOB}`);
+    await c.asyncJobs.result(JOB);
+    expect(mock.calls.at(-1)!.url.pathname).toBe(`/v1/async/requests/${JOB}/result`);
+  });
+});
+
+describe("account request history", () => {
+  const page = (cursor: string | null) =>
+    json(200, {
+      success: true,
+      request_id: REQUEST_ID,
+      data: { requests: [], next_cursor: cursor, range: { from: "a", to: "b" } },
+    });
+
+  it("lists with filters and follows next_cursor", async () => {
+    const mock = mockFetch(page("c2"), page(null));
+    const pages = [];
+    for await (const p of client(mock).account.requests.pages({ provider: "google", limit: 10 })) pages.push(p);
+    expect(pages).toHaveLength(2);
+    expect(mock.calls[0]!.url.pathname).toBe("/v1/account/requests");
+    expect(mock.calls[0]!.url.searchParams.get("provider")).toBe("google");
+    expect(mock.calls[0]!.url.searchParams.get("limit")).toBe("10");
+    expect(mock.calls[0]!.url.searchParams.has("cursor")).toBe(false);
+    expect(mock.calls[1]!.url.searchParams.get("cursor")).toBe("c2");
+  });
+
+  it("gets any request by id", async () => {
+    const mock = mockFetch(ok());
+    await client(mock).account.requests.get(REQUEST_ID);
+    expect(mock.calls.at(-1)!.url.pathname).toBe(`/v1/account/requests/${REQUEST_ID}`);
+  });
+});
+
+describe("verifyWebhook", () => {
+  const secret = "w".repeat(40);
+  const payload = JSON.stringify({ success: true, request_id: REQUEST_ID, data: { format: "json", content: {} } });
+  const t = 1_800_000_000;
+  const sign = (body: string, ts = t, key = secret) =>
+    `t=${ts},v1=${createHmac("sha256", key).update(`${ts}.${body}`).digest("hex")}`;
+  const headers = (signature: string) => ({
+    "Content-Type": "application/json",
+    "Prism-Signature": signature,
+    "Prism-Event-Id": REQUEST_ID,
+    "Prism-Request-Id": REQUEST_ID,
+    "Prism-Result-Status": "200",
+  });
+
+  it("accepts a valid delivery and parses it", async () => {
+    const event = await verifyWebhook({ payload, headers: headers(sign(payload)), secret, now: t * 1000 });
+    expect(event).toMatchObject({ eventId: REQUEST_ID, requestId: REQUEST_ID, resultStatus: 200, timestamp: t });
+    expect((event.body as { success: boolean }).success).toBe(true);
+  });
+
+  it("accepts a Headers object and byte payloads", async () => {
+    const event = await verifyWebhook({
+      payload: new TextEncoder().encode(payload),
+      headers: new Headers(headers(sign(payload))),
+      secret,
+      now: t * 1000,
+    });
+    expect(event.eventId).toBe(REQUEST_ID);
+  });
+
+  it("rejects tampered bodies, wrong secrets, stale timestamps, and missing headers", async () => {
+    const verify = (opts: Partial<Parameters<typeof verifyWebhook>[0]>) =>
+      verifyWebhook({ payload, headers: headers(sign(payload)), secret, now: t * 1000, ...opts });
+    await expect(verify({ payload: payload + " " })).rejects.toBeInstanceOf(WebhookVerificationError);
+    await expect(verify({ secret: "x".repeat(40) })).rejects.toBeInstanceOf(WebhookVerificationError);
+    await expect(verify({ now: (t + 301) * 1000 })).rejects.toThrow(/tolerance/);
+    await expect(verify({ headers: { "Prism-Event-Id": "e" } })).rejects.toThrow(/Missing Prism-Signature/);
+    await expect(verify({ headers: headers("t=1,v1=zz") })).rejects.toThrow(/Malformed/);
   });
 });

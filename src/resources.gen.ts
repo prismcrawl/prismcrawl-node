@@ -3,12 +3,42 @@ import type { Transport } from "./core.js";
 import { createEndpoint, type Endpoint, type PaginatedEndpoint } from "./endpoint.js";
 import type * as T from "./types.gen.js";
 
+/** Airbnb endpoints. */
+export interface AirbnbResource {
+  /**
+   * Airbnb Search: `POST /v1/airbnb/search`
+   *
+   * Search Airbnb stays with dates, guests, map bounds, property filters, prices, and pagination.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly search: PaginatedEndpoint<T.AirbnbRequest, T.AirbnbResponse>;
+}
+
 /** Amazon endpoints. */
 export interface AmazonResource {
+  /**
+   * Amazon Autocomplete: `POST /v1/amazon/autocomplete`
+   *
+   * Retrieve native Amazon Autocomplete data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly autocomplete: Endpoint<T.AmazonAutocompleteRequest, T.AmazonAutocompleteResponse>;
+  /**
+   * Amazon Product: `POST /v1/amazon/product`
+   *
+   * Retrieve native Amazon Product data. Confirmed missing products return HTTP 200 with empty results and search_parameters.product_not_found=true, costing one credit. Malformed requests and retrieval failures are uncharged.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly product: Endpoint<T.AmazonProductRequest, T.AmazonProductResponse>;
   /**
    * Search Amazon: `POST /v1/amazon/search`
    *
    * Returns normalized Amazon product results, a typed navigation or empty-results surface, or encoded source HTML.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
    */
   readonly search: PaginatedEndpoint<T.AmazonSearchRequest, T.AmazonSearchResponse>;
 }
@@ -19,18 +49,24 @@ export interface AppleAppStoreResource {
    * Apple App Store Product: `POST /v1/apple/app-store/product`
    *
    * Retrieve Apple App Store Product data with the existing PrismCrawl authentication, credits, and request-history behavior.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
    */
   readonly product: Endpoint<T.AppleAppStoreProductRequest, T.AppleAppStoreProductResponse>;
   /**
    * Apple App Store Reviews: `POST /v1/apple/app-store/reviews`
    *
    * Retrieve Apple App Store Reviews data with the existing PrismCrawl authentication, credits, and request-history behavior.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
    */
   readonly reviews: PaginatedEndpoint<T.AppleAppStoreReviewsRequest, T.AppleAppStoreReviewsResponse>;
   /**
    * Apple App Store Search: `POST /v1/apple/app-store/search`
    *
-   * Search Apple App Store apps and paginate the source's returned inventory of up to 200 results. Continuation is scoped to the query and fails if the ordered source inventory changes.
+   * Search Apple App Store apps, optionally by developer name, genre, or explicit-content setting. Filter and paginate Apple’s returned inventory of up to 200 apps. Continuations bind the filters and ordered inventory; source ranking changes end pagination.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
    */
   readonly search: PaginatedEndpoint<T.AppleAppStoreRequest, T.AppleAppStoreResponse>;
 }
@@ -38,15 +74,27 @@ export interface AppleAppStoreResource {
 /** Apple Maps endpoints. */
 export interface AppleMapsResource {
   /**
+   * Apple Maps Places: `POST /v1/apple/maps/place`
+   *
+   * Retrieve Apple Maps Places data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly place: Endpoint<T.AppleMapsPlaceRequest, T.AppleMapsPlaceResponse>;
+  /**
    * Apple Maps Reviews: `POST /v1/apple/maps/reviews`
    *
    * Return Apple Maps' attributed review selection. Exact linked Yelp and Tripadvisor reviews include complete publisher text when available; other rows remain marked excerpts. Apple provides no additional review pages.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
    */
   readonly reviews: Endpoint<T.AppleMapsReviewsRequest, T.AppleMapsReviewsResponse>;
   /**
-   * Apple Maps Places: `POST /v1/apple/maps/search`
+   * Apple Maps Search: `POST /v1/apple/maps/search`
    *
-   * Retrieve Apple Maps Places data with the existing PrismCrawl authentication, credits, and request-history behavior.
+   * Search Apple Maps places with a location or coordinates, regional localization and native search refinements.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
    */
   readonly search: Endpoint<T.AppleMapsRequest, T.AppleMapsResponse>;
 }
@@ -57,25 +105,155 @@ export interface AppleResource {
   readonly maps: AppleMapsResource;
 }
 
+/** Baidu News endpoints. */
+export interface BaiduNewsResource {
+  /**
+   * Baidu News: `POST /v1/baidu/news/search`
+   *
+   * Retrieve native Baidu News data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly search: PaginatedEndpoint<T.BaiduNewsRequest, T.BaiduNewsResponse>;
+}
+
+/** Baidu endpoints. */
+export interface BaiduResource {
+  readonly news: BaiduNewsResource;
+  /**
+   * Baidu Search: `POST /v1/baidu/search`
+   *
+   * Retrieve native Baidu Search data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly search: PaginatedEndpoint<T.BaiduRequest, T.BaiduResponse>;
+}
+
+/** Brave endpoints. */
+export interface BraveResource {
+  /**
+   * Brave AI Mode: `POST /v1/brave/ai-mode`
+   *
+   * Retrieve a Brave AI Mode answer and its sources. Send a new query with next_page_token to continue the conversation, keeping localization settings unchanged. Public proof and AI streaming can require up to 40 seconds on CPU-constrained runtimes.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly aiMode: PaginatedEndpoint<T.BraveAiModeRequest, T.BraveAiModeResponse>;
+}
+
 /** DuckDuckGo Maps endpoints. */
 export interface DuckDuckGoMapsResource {
   /**
    * DuckDuckGo Maps: `POST /v1/duckduckgo/maps/search`
    *
    * Retrieve DuckDuckGo Maps data with the existing PrismCrawl authentication, credits, and request-history behavior.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
    */
   readonly search: Endpoint<T.DuckDuckGoMapsRequest, T.DuckDuckGoMapsResponse>;
+}
+
+/** DuckDuckGo News endpoints. */
+export interface DuckDuckGoNewsResource {
+  /**
+   * DuckDuckGo News: `POST /v1/duckduckgo/news/search`
+   *
+   * Retrieve native DuckDuckGo News data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly search: PaginatedEndpoint<T.DuckDuckGoNewsRequest, T.DuckDuckGoNewsResponse>;
+}
+
+/** DuckDuckGo Search endpoints. */
+export interface DuckDuckGoSearchResource {
+  /**
+   * DuckDuckGo Light: `POST /v1/duckduckgo/search/light`
+   *
+   * Retrieve native DuckDuckGo Light data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly light: PaginatedEndpoint<T.DuckDuckGoLightRequest, T.DuckDuckGoLightResponse>;
 }
 
 /** DuckDuckGo endpoints. */
 export interface DuckDuckGoResource {
   readonly maps: DuckDuckGoMapsResource;
+  readonly news: DuckDuckGoNewsResource;
   /**
    * DuckDuckGo Search: `POST /v1/duckduckgo/search`
    *
-   * Retrieve DuckDuckGo Search data with the existing PrismCrawl authentication, credits, and request-history behavior.
+   * Retrieve DuckDuckGo Search data with the existing PrismCrawl authentication, credits, and request-history behavior. Queries must not exceed 500 UTF-8 bytes; non-ASCII characters can use multiple bytes.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
    */
-  readonly search: PaginatedEndpoint<T.DuckDuckGoRequest, T.DuckDuckGoResponse>;
+  readonly search: PaginatedEndpoint<T.DuckDuckGoRequest, T.DuckDuckGoResponse> & DuckDuckGoSearchResource;
+}
+
+/** Ebay endpoints. */
+export interface EbayResource {
+  /**
+   * eBay Product: `POST /v1/ebay/product`
+   *
+   * Retrieve native eBay Product data. A native missing-item page returned at the exact requested item URL completes with HTTP 200, empty results, product_not_found and source_status metadata, and costs one credit. Challenges, contradictory identities, and unrelated redirects remain errors.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly product: Endpoint<T.EbayProductRequest, T.EbayProductResponse>;
+  /**
+   * eBay Search: `POST /v1/ebay/search`
+   *
+   * Retrieve native eBay Search data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly search: PaginatedEndpoint<T.EbayRequest, T.EbayResponse>;
+  /**
+   * eBay Seller: `POST /v1/ebay/seller`
+   *
+   * Look up an eBay seller profile, or set type to user/store to retrieve its inventory and source pagination. Confirmed missing stores return HTTP 200 with empty results and search_parameters.store_not_found=true, costing one credit. Malformed requests and retrieval failures are uncharged.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly seller: PaginatedEndpoint<T.EbaySellerRequest, T.EbaySellerResponse>;
+}
+
+/** Facebook endpoints. */
+export interface FacebookResource {
+  /**
+   * Facebook Profile: `POST /v1/facebook/profile`
+   *
+   * Retrieve public Facebook profile data by username or numeric ID. Directory routes such as pages are not profile IDs. A source-confirmed unavailable profile returns an empty results array with search_parameters.profile_unavailable=true; login walls without that confirmation remain errors.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly profile: Endpoint<T.FacebookProfileRequest, T.FacebookProfileResponse>;
+}
+
+/** Google Ads Transparency endpoints. */
+export interface GoogleAdsTransparencyResource {
+  /**
+   * Google Ads Transparency Ad Details: `POST /v1/google/ads/transparency/details`
+   *
+   * Retrieve an ad creative with regional serving history, funding identity and available text, image or video previews.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly details: Endpoint<T.GoogleAdsTransparencyAdDetailsRequest, T.GoogleAdsTransparencyAdDetailsResponse>;
+}
+
+/** Google Ads endpoints. */
+export interface GoogleAdsResource {
+  /**
+   * Google Ads Transparency: `POST /v1/google/ads/transparency`
+   *
+   * Find ad creatives by search text or one or more advertiser IDs. Filter by platform, region, date, format or political advertising; optionally retrieve advertiser details.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly transparency: PaginatedEndpoint<T.GoogleAdsTransparencyRequest, T.GoogleAdsTransparencyResponse> & GoogleAdsTransparencyResource;
 }
 
 /** Google Contributor endpoints. */
@@ -84,24 +262,238 @@ export interface GoogleContributorResource {
    * Google Contributor Reviews: `POST /v1/google/contributor/reviews`
    *
    * Retrieve full Google contributor reviews in newest order, with pagination over the first 200 reviews.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
    */
   readonly reviews: PaginatedEndpoint<T.GoogleContributorReviewsRequest, T.GoogleContributorReviewsResponse>;
+}
+
+/** Google Finance endpoints. */
+export interface GoogleFinanceResource {
+  /**
+   * Google Finance Markets: `POST /v1/google/finance/markets`
+   *
+   * Retrieve Google Finance Markets using its native source data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly markets: Endpoint<T.GoogleFinanceMarketsRequest, T.GoogleFinanceMarketsResponse>;
+}
+
+/** Google Flights endpoints. */
+export interface GoogleFlightsResource {
+  /**
+   * Google Flights Autocomplete: `POST /v1/google/flights/autocomplete`
+   *
+   * Retrieve Google Flights Autocomplete data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly autocomplete: Endpoint<T.GoogleFlightsAutocompleteRequest, T.GoogleFlightsAutocompleteResponse>;
+  /**
+   * Google Flights Deals: `POST /v1/google/flights/deals`
+   *
+   * Find Google Flight Deals from one or more comma-separated airport or city IDs, optionally matching a natural-language trip request. Supports passenger counts, travel class, round or one-way travel, stops, airline, price and flight-duration filters.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly deals: Endpoint<T.GoogleFlightsDealsRequest, T.GoogleFlightsDealsResponse>;
+  /**
+   * Google Flights: `POST /v1/google/flights/search`
+   *
+   * Search flights using departure_id, arrival_id, and outbound_date. Omit return_date for one-way travel. All itinerary dates, including return and multi-city legs, must be within 330 days of the current UTC date. Supports up to nine travelers; each infant on a lap requires an adult. Use flight autocomplete to resolve airport IDs. Airport/location IDs may be comma-separated. Supports airline, schedule, duration, price, emissions, baggage and fare filters. Use type 3 and multi_city_json for multiple legs.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly search: Endpoint<T.GoogleFlightsRequest, T.GoogleFlightsResponse>;
+}
+
+/** Google Hotels endpoints. */
+export interface GoogleHotelsResource {
+  /**
+   * Google Hotels Autocomplete: `POST /v1/google/hotels/autocomplete`
+   *
+   * Retrieve Google Hotels Autocomplete data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly autocomplete: Endpoint<T.GoogleHotelsAutocompleteRequest, T.GoogleHotelsAutocompleteResponse>;
+  /**
+   * Google Hotels Photos: `POST /v1/google/hotels/photos`
+   *
+   * Retrieve hotel overview photos and categorized galleries. Each category has its own continuation token; initial category pages contain up to 30 images and subsequent pages honor limit up to 100.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly photos: PaginatedEndpoint<T.GoogleHotelsPhotosRequest, T.GoogleHotelsPhotosResponse>;
+  /**
+   * Google Hotels Reviews: `POST /v1/google/hotels/reviews`
+   *
+   * Retrieve Google Hotels Reviews data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly reviews: PaginatedEndpoint<T.GoogleHotelsReviewsRequest, T.GoogleHotelsReviewsResponse>;
+  /**
+   * Google Hotels: `POST /v1/google/hotels/search`
+   *
+   * Retrieve Google Hotels data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly search: PaginatedEndpoint<T.GoogleHotelsRequest, T.GoogleHotelsResponse>;
+}
+
+/** Google Images endpoints. */
+export interface GoogleImagesResource {
+  /**
+   * Google Images Light: `POST /v1/google/images/light`
+   *
+   * Retrieve Google Images Light using its native source data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly light: PaginatedEndpoint<T.GoogleImagesLightRequest, T.GoogleImagesLightResponse>;
+  /**
+   * Google Images Related Content: `POST /v1/google/images/related-content`
+   *
+   * Retrieve related image content using related_content_id from Google Images. The existing image URL id flow remains available for Lens visual matches.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly relatedContent: Endpoint<T.GoogleImagesRelatedContentRequest, T.GoogleImagesRelatedContentResponse>;
+}
+
+/** Google Jobs endpoints. */
+export interface GoogleJobsResource {
+  /**
+   * Google Jobs Listing: `POST /v1/google/jobs/listing`
+   *
+   * Retrieve a selected job using listing_token from Google Jobs in id. Keep the source locale. Employer ratings are included when the source provides them.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly listing: Endpoint<T.GoogleJobsListingRequest, T.GoogleJobsListingResponse>;
+}
+
+/** Google Light endpoints. */
+export interface GoogleLightResource {
+  /**
+   * Google Light Search: `POST /v1/google/light/search`
+   *
+   * Retrieve Google Light Search using its native source data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly search: PaginatedEndpoint<T.GoogleLightRequest, T.GoogleLightResponse>;
+}
+
+/** Google Local endpoints. */
+export interface GoogleLocalResource {
+  /**
+   * Google Local Services: `POST /v1/google/local/services`
+   *
+   * Search Google Local Services sponsored providers or select a provider profile using its cid/bid/pid tuple. Supports named locations and geographic city or district CIDs.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly services: Endpoint<T.GoogleLocalServicesRequest, T.GoogleLocalServicesResponse>;
+}
+
+/** Google Maps Photos endpoints. */
+export interface GoogleMapsPhotosResource {
+  /**
+   * Google Maps Photo Metadata: `POST /v1/google/maps/photos/meta`
+   *
+   * Look up a Maps photo data ID to retrieve contributor information, location, date and available image metadata. Dates use YYYY-MM-DD.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly meta: Endpoint<T.GoogleMapsPhotoMetaRequest, T.GoogleMapsPhotoMetaResponse>;
 }
 
 /** Google Maps endpoints. */
 export interface GoogleMapsResource {
   /**
+   * Google Maps Autocomplete: `POST /v1/google/maps/autocomplete`
+   *
+   * Retrieve Google Maps query and place suggestions.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly autocomplete: Endpoint<T.GoogleMapsAutocompleteRequest, T.GoogleMapsAutocompleteResponse>;
+  /**
+   * Google Maps Directions: `POST /v1/google/maps/directions`
+   *
+   * Retrieve Google Maps Directions data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly directions: Endpoint<T.GoogleMapsDirectionsRequest, T.GoogleMapsDirectionsResponse>;
+  /**
+   * Google Maps Photos: `POST /v1/google/maps/photos`
+   *
+   * Retrieve Google Maps place gallery photos with native continuation.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly photos: PaginatedEndpoint<T.GoogleMapsPhotosRequest, T.GoogleMapsPhotosResponse> & GoogleMapsPhotosResource;
+  /**
+   * Google Maps Posts: `POST /v1/google/maps/posts`
+   *
+   * Retrieve Google Maps business posts, event details and links with native pagination.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly posts: PaginatedEndpoint<T.GoogleMapsPostsRequest, T.GoogleMapsPostsResponse>;
+  /**
    * Google Maps Reviews: `POST /v1/google/maps/reviews`
    *
-   * Retrieve complete Google Maps review text in relevance order with native continuation tokens. If Google restricts access and supplies a verified place preview, the response marks that subset with access_limited and pagination_limited and omits the next-page token. Restrictions without a verified preview return an upstream error.
+   * Retrieve Google Maps reviews by place ID or hexadecimal data ID, with sorting, topic or text filters and continuation tokens.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
    */
   readonly reviews: PaginatedEndpoint<T.GoogleMapsReviewsRequest, T.GoogleMapsReviewsResponse>;
   /**
    * Search Google Maps: `POST /v1/google/maps/search`
    *
-   * Returns up to 20 normalized Google Maps places from a coordinate-centered viewport.
+   * Search Google Maps with an optional geographic origin, returning up to 20 places per page, or look up one place by place_id or data_cid. When the requested CID has no available place, the completed lookup returns HTTP 200, empty results and search_parameters.place_not_found: true, and costs one credit. An empty business_status means the status is unavailable; it does not mean the business is closed.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
    */
   readonly search: Endpoint<T.GoogleMapsSearchRequest, T.GoogleMapsSearchResponse>;
+}
+
+/** Google News endpoints. */
+export interface GoogleNewsResource {
+  /**
+   * Google News Light: `POST /v1/google/news/light`
+   *
+   * Retrieve Google News Light using its native source data. The site: operator is unsupported; use /v1/google/news for site-filtered news queries.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly light: PaginatedEndpoint<T.GoogleNewsLightRequest, T.GoogleNewsLightResponse>;
+}
+
+/** Google Patents endpoints. */
+export interface GooglePatentsResource {
+  /**
+   * Google Patents Details: `POST /v1/google/patents/details`
+   *
+   * Retrieve Google Patents Details using its native source data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly details: Endpoint<T.GooglePatentsDetailsRequest, T.GooglePatentsDetailsResponse>;
+  /**
+   * Google Patents: `POST /v1/google/patents/search`
+   *
+   * Retrieve Google Patents using its native source data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly search: PaginatedEndpoint<T.GooglePatentsRequest, T.GooglePatentsResponse>;
 }
 
 /** Google Play Apps endpoints. */
@@ -109,7 +501,9 @@ export interface GooglePlayAppsResource {
   /**
    * Google Play Apps: `POST /v1/google/play/apps/search`
    *
-   * Retrieve Google Play Apps data with the existing PrismCrawl authentication, credits, and request-history behavior.
+   * Browse categories or search Google Play Apps data with the existing PrismCrawl authentication, credits, and request-history behavior.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
    */
   readonly search: PaginatedEndpoint<T.GooglePlayAppsRequest, T.GooglePlayAppsResponse>;
 }
@@ -119,7 +513,9 @@ export interface GooglePlayBooksResource {
   /**
    * Google Play Books: `POST /v1/google/play/books/search`
    *
-   * Retrieve Google Play Books data with the existing PrismCrawl authentication, credits, and request-history behavior.
+   * Browse categories or search Google Play Books data with the existing PrismCrawl authentication, credits, and request-history behavior.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
    */
   readonly search: PaginatedEndpoint<T.GooglePlayBooksRequest, T.GooglePlayBooksResponse>;
 }
@@ -130,6 +526,8 @@ export interface GooglePlayGamesResource {
    * Google Play Games: `POST /v1/google/play/games/search`
    *
    * Browse Google Play game categories or search a query, returning only candidates whose first-party product metadata identifies a game. Query pages can be shorter than the requested limit; follow next_page_token when present.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
    */
   readonly search: PaginatedEndpoint<T.GooglePlayGamesRequest, T.GooglePlayGamesResponse>;
 }
@@ -139,7 +537,9 @@ export interface GooglePlayMoviesResource {
   /**
    * Google Play Movies: `POST /v1/google/play/movies/search`
    *
-   * Retrieve Google Play Movies data with the existing PrismCrawl authentication, credits, and request-history behavior.
+   * Browse categories or search Google Play Movies data with the existing PrismCrawl authentication, credits, and request-history behavior.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
    */
   readonly search: PaginatedEndpoint<T.GooglePlayMoviesRequest, T.GooglePlayMoviesResponse>;
 }
@@ -154,38 +554,391 @@ export interface GooglePlayResource {
    * Google Play Product: `POST /v1/google/play/product`
    *
    * Retrieve Google Play Product data with the existing PrismCrawl authentication, credits, and request-history behavior.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
    */
   readonly product: Endpoint<T.GooglePlayProductRequest, T.GooglePlayProductResponse>;
   /**
    * Google Play Reviews: `POST /v1/google/play/reviews`
    *
    * Retrieve Google Play Reviews data with the existing PrismCrawl authentication, credits, and request-history behavior.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
    */
   readonly reviews: PaginatedEndpoint<T.GooglePlayReviewsRequest, T.GooglePlayReviewsResponse>;
+}
+
+/** Google Scholar endpoints. */
+export interface GoogleScholarResource {
+  /**
+   * Google Scholar Author: `POST /v1/google/scholar/author`
+   *
+   * Retrieve author profiles and articles, individual publication details, or co-authors.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly author: PaginatedEndpoint<T.GoogleScholarAuthorRequest, T.GoogleScholarAuthorResponse>;
+  /**
+   * Google Scholar Case Law: `POST /v1/google/scholar/case-law`
+   *
+   * Search court opinions by query, or retrieve one opinion using case_id. Case details cannot be combined with search filters or pagination.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly caseLaw: PaginatedEndpoint<T.GoogleScholarCaseLawRequest, T.GoogleScholarCaseLawResponse>;
+  /**
+   * Google Scholar Cite: `POST /v1/google/scholar/cite`
+   *
+   * Retrieve citation formats and export links for a Scholar result.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly cite: Endpoint<T.GoogleScholarCiteRequest, T.GoogleScholarCiteResponse>;
+  /**
+   * Google Scholar: `POST /v1/google/scholar/search`
+   *
+   * Retrieve Google Scholar using its native source data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly search: PaginatedEndpoint<T.GoogleScholarRequest, T.GoogleScholarResponse>;
 }
 
 /** Google Shopping endpoints. */
 export interface GoogleShoppingResource {
   /**
+   * Google Shopping Filters: `POST /v1/google/shopping/filters`
+   *
+   * Retrieve native filter groups, labels and query-bound shoprs selections from Google Shopping.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly filters: Endpoint<T.GoogleShoppingFiltersRequest, T.GoogleShoppingFiltersResponse>;
+  /**
+   * Google Immersive Product: `POST /v1/google/shopping/immersive-product`
+   *
+   * Retrieve the exact Google product offer selected by a Shopping result token, with optional expanded stores and source-bound store pagination. Serving identities remain private to each request.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly immersiveProduct: PaginatedEndpoint<T.GoogleImmersiveProductRequest, T.GoogleImmersiveProductResponse>;
+  /**
+   * Google Shopping Light: `POST /v1/google/shopping/light`
+   *
+   * Retrieve real catalog products, prices, merchants and ratings from the native Google Shopping surface. Responses identify source_surface as shopping and expose continuation only when the source supplies a next-page link. Returns organic products in results and sponsored offers in shopping_ads, including native destination and tracking URLs. Ad links are returned without being visited.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly light: PaginatedEndpoint<T.GoogleShoppingLightRequest, T.GoogleShoppingLightResponse>;
+  /**
    * Google Shopping Product: `POST /v1/google/shopping/product`
    *
-   * Look up a product_id returned by Google Shopping using the original Shopping query. Returns the current product details, merchant offers, images, and specifications supplied by Google. A recognized unavailable product returns a successful, billable empty response with search_parameters.product_unavailable:true and product_unavailable_reason:not_in_results when the ID is absent from the current query's Shopping cards, or unavailable when the product viewer reports no details. Retrieved product details are also successful and billable when offers are out of stock or absent.
+   * Retrieve a Google product by id, optionally with its original query, or by page_token returned by Google Shopping. Product tokens retain the exact source offer and locale. Returns native product details, merchant offers, images and specifications.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
    */
   readonly product: Endpoint<T.GoogleShoppingProductRequest, T.GoogleShoppingProductResponse>;
+}
+
+/** Google Travel endpoints. */
+export interface GoogleTravelResource {
+  /**
+   * Google Travel Explore: `POST /v1/google/travel/explore`
+   *
+   * Explore destinations and fares from one or more comma-separated airport or city IDs. Supports flexible months/durations, exact dates, destination regions, travel class, passenger counts, airlines, stops, baggage, price and duration filters. Specify arrival_id for flights to a selected destination.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly explore: Endpoint<T.GoogleTravelExploreRequest, T.GoogleTravelExploreResponse>;
+}
+
+/** Google Trends endpoints. */
+export interface GoogleTrendsResource {
+  /**
+   * Google Trends Autocomplete: `POST /v1/google/trends/autocomplete`
+   *
+   * Retrieve Google Trends Autocomplete using its native source data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly autocomplete: Endpoint<T.GoogleTrendsAutocompleteRequest, T.GoogleTrendsAutocompleteResponse>;
+  /**
+   * Google Trends News: `POST /v1/google/trends/news`
+   *
+   * Retrieve news articles for a trending search. Use news_page_token from Trending Now.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly news: Endpoint<T.GoogleTrendsNewsRequest, T.GoogleTrendsNewsResponse>;
+  /**
+   * Google Trends Trending Now: `POST /v1/google/trends/trending-now`
+   *
+   * Retrieve Google Trends Trending Now using its native source data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly trendingNow: Endpoint<T.GoogleTrendsTrendingNowRequest, T.GoogleTrendsTrendingNowResponse>;
+}
+
+/** Google Videos endpoints. */
+export interface GoogleVideosResource {
+  /**
+   * Google Videos Light: `POST /v1/google/videos/light`
+   *
+   * Retrieve Google Videos Light using its native source data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly light: PaginatedEndpoint<T.GoogleVideosLightRequest, T.GoogleVideosLightResponse>;
 }
 
 /** Google endpoints. */
 export interface GoogleResource {
   readonly contributor: GoogleContributorResource;
+  readonly flights: GoogleFlightsResource;
+  readonly hotels: GoogleHotelsResource;
+  readonly light: GoogleLightResource;
   readonly maps: GoogleMapsResource;
+  readonly patents: GooglePatentsResource;
   readonly play: GooglePlayResource;
-  readonly shopping: GoogleShoppingResource;
+  readonly scholar: GoogleScholarResource;
+  readonly travel: GoogleTravelResource;
+  /**
+   * Google About This Result: `POST /v1/google/about-this-result`
+   *
+   * Retrieve Google source information for a website URL or an About This Result request token, including available descriptions and source references.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly aboutThisResult: Endpoint<T.GoogleAboutThisResultRequest, T.GoogleAboutThisResultResponse>;
+  /**
+   * Google Ads: `POST /v1/google/ads`
+   *
+   * Retrieve Google Search ad results. ads_available is false when the valid search page contains no ads.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly ads: Endpoint<T.GoogleAdsRequest, T.GoogleAdsResponse> & GoogleAdsResource;
+  /**
+   * Google AI Mode: `POST /v1/google/ai-mode`
+   *
+   * Retrieve Google AI Mode answers, with optional image questions and encrypted client-carried follow-up conversations.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly aiMode: Endpoint<T.GoogleAiModeRequest, T.GoogleAiModeResponse>;
+  /**
+   * Google AI Overview: `POST /v1/google/ai-overview`
+   *
+   * Retrieve an AI Overview by query or by the short-lived ai_overview.page_token supplied by Google Search. A valid page without an overview returns feature_available=false.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly aiOverview: Endpoint<T.GoogleAiOverviewRequest, T.GoogleAiOverviewResponse>;
+  /**
+   * Google Autocomplete: `POST /v1/google/autocomplete`
+   *
+   * Retrieve Google Autocomplete using its native source data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly autocomplete: Endpoint<T.GoogleAutocompleteRequest, T.GoogleAutocompleteResponse>;
+  /**
+   * Google Link Decoder: `POST /v1/google/decode`
+   *
+   * Resolve up to 10 opaque Google Search links per request. Submit complete HTTPS /goto or opaque /url links; links may come from different searches. Results retain input order. One credit per completed batch, including when Google confirms none of the links can be resolved. Partial success returns the usable destinations. Operational failures without usable results return an uncharged error.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly decode: Endpoint<T.GoogleDecodeRequest, T.GoogleDecodeResponse>;
+  /**
+   * Google Events: `POST /v1/google/events`
+   *
+   * Retrieve actual event cards from Google Search. source_surface is search_events; events_available is false when no event pack is shown. The retired immersive Events surface and its pagination are not used.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly events: Endpoint<T.GoogleEventsRequest, T.GoogleEventsResponse>;
+  /**
+   * Google Finance: `POST /v1/google/finance`
+   *
+   * Retrieve Google Finance using its native source data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly finance: Endpoint<T.GoogleFinanceRequest, T.GoogleFinanceResponse> & GoogleFinanceResource;
+  /**
+   * Google Forums: `POST /v1/google/forums`
+   *
+   * Retrieve Google Forums using its native source data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly forums: PaginatedEndpoint<T.GoogleForumsRequest, T.GoogleForumsResponse>;
+  /**
+   * Google Images: `POST /v1/google/images`
+   *
+   * Retrieve Google Images using its native source data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly images: PaginatedEndpoint<T.GoogleImagesRequest, T.GoogleImagesResponse> & GoogleImagesResource;
+  /**
+   * Google Jobs: `POST /v1/google/jobs`
+   *
+   * Retrieve Google Jobs using its native source data. Source-confirmed empty searches are successful, billable lookups; unsupported country inputs return HTTP 400 without charge.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly jobs: PaginatedEndpoint<T.GoogleJobsRequest, T.GoogleJobsResponse> & GoogleJobsResource;
+  /**
+   * Google Lens: `POST /v1/google/lens`
+   *
+   * Find image matches with Google Lens. Supply either a public HTTPS image URL in id or image_base64 for direct image upload. Optional query refines all or visual_matches searches.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly lens: Endpoint<T.GoogleLensRequest, T.GoogleLensResponse>;
+  /**
+   * Google Local: `POST /v1/google/local`
+   *
+   * Retrieve Google Local using its native source data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly local: Endpoint<T.GoogleLocalRequest, T.GoogleLocalResponse> & GoogleLocalResource;
+  /**
+   * Google News: `POST /v1/google/news`
+   *
+   * Search news by query, or browse current headlines and native topics, publishers, sections and stories. Queries with a site: operator require a supported Google News country/language edition (for example us/en, ae/ar or ca/fr); unavailable pairs such as ae/en are rejected before searching. These queries support the first desktop page without page, safe or time_range refinements. Ordinary keyword searches retain independent country and language controls.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly news: PaginatedEndpoint<T.GoogleNewsRequest, T.GoogleNewsResponse> & GoogleNewsResource;
+  /**
+   * Google Related Questions: `POST /v1/google/related-questions`
+   *
+   * Retrieve People Also Ask questions for query, or expand a returned next_page_token. Individual result tokens select that question.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly relatedQuestions: PaginatedEndpoint<T.GoogleRelatedQuestionsRequest, T.GoogleRelatedQuestionsResponse>;
+  /**
+   * Google Reverse Image: `POST /v1/google/reverse-image`
+   *
+   * Retrieve reverse-image matches for a public HTTPS image URL in id, with optional text refinement, localization, safe search and source filters. Offsets select within the native result window; responses mark pagination_limited, and offsets beyond a nonempty window return 400.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly reverseImage: Endpoint<T.GoogleReverseImageRequest, T.GoogleReverseImageResponse>;
   /**
    * Search Google: `POST /v1/google/search`
    *
    * Returns normalized Google results, or encoded source HTML.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
    */
   readonly search: Endpoint<T.GoogleSearchRequest, T.GoogleSearchResponse>;
+  /**
+   * Google Shopping: `POST /v1/google/shopping`
+   *
+   * Retrieve real catalog products, prices, merchants and ratings from the native Google Shopping surface. Responses identify source_surface as shopping and expose continuation only when the source supplies a next-page link. Returns organic products in results and sponsored offers in shopping_ads, including native destination and tracking URLs. Ad links are returned without being visited.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly shopping: PaginatedEndpoint<T.GoogleShoppingRequest, T.GoogleShoppingResponse> & GoogleShoppingResource;
+  /**
+   * Google Short Videos: `POST /v1/google/short-videos`
+   *
+   * Retrieve native Google Short Videos cards and source-reported continuation. Numeric pages use the native twelve-unit offset.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly shortVideos: PaginatedEndpoint<T.GoogleShortVideosRequest, T.GoogleShortVideosResponse>;
+  /**
+   * Google Sports: `POST /v1/google/sports`
+   *
+   * Retrieve Google Sports using its native source data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly sports: Endpoint<T.GoogleSportsRequest, T.GoogleSportsResponse>;
+  /**
+   * Google Trends: `POST /v1/google/trends`
+   *
+   * Retrieve Google Trends data for one to five comma-separated terms. time_range accepts all, now 1-H, now 4-H, now 1-d, now 7-d, today 1-m, today 3-m, today 12-m, today 5-y, or an ordered YYYY-MM-DD date pair from 2004 through today.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly trends: Endpoint<T.GoogleTrendsRequest, T.GoogleTrendsResponse> & GoogleTrendsResource;
+  /**
+   * Google Videos: `POST /v1/google/videos`
+   *
+   * Retrieve Google Videos using its native source data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly videos: PaginatedEndpoint<T.GoogleVideosRequest, T.GoogleVideosResponse> & GoogleVideosResource;
+}
+
+/** HomeDepot endpoints. */
+export interface HomeDepotResource {
+  /**
+   * Home Depot Product: `POST /v1/home-depot/product`
+   *
+   * Retrieve native Home Depot Product data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly product: Endpoint<T.HomeDepotProductRequest, T.HomeDepotProductResponse>;
+  /**
+   * Home Depot Reviews: `POST /v1/home-depot/reviews`
+   *
+   * Retrieve native Home Depot Reviews data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly reviews: PaginatedEndpoint<T.HomeDepotReviewsRequest, T.HomeDepotReviewsResponse>;
+  /**
+   * Home Depot Search: `POST /v1/home-depot/search`
+   *
+   * Retrieve native Home Depot Search data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly search: PaginatedEndpoint<T.HomeDepotRequest, T.HomeDepotResponse>;
+}
+
+/** Instagram endpoints. */
+export interface InstagramResource {
+  /**
+   * Instagram Profile: `POST /v1/instagram/profile`
+   *
+   * Retrieve a public Instagram profile and its posts. Continue the source-backed post feed with next_page_token. Confirmed missing profiles return HTTP 200 with empty results and search_parameters.profile_not_found=true, costing one credit. Malformed requests and retrieval failures are uncharged.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly profile: PaginatedEndpoint<T.InstagramProfileRequest, T.InstagramProfileResponse>;
+}
+
+/** Microsoft Images endpoints. */
+export interface MicrosoftImagesResource {
+  /**
+   * Bing Reverse Image: `POST /v1/microsoft/images/reverse`
+   *
+   * Retrieve native Bing Reverse Image data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly reverse: PaginatedEndpoint<T.BingReverseImageRequest, T.BingReverseImageResponse>;
+  /**
+   * Bing Images: `POST /v1/microsoft/images/search`
+   *
+   * Retrieve native Bing Images data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly search: PaginatedEndpoint<T.BingImagesRequest, T.BingImagesResponse>;
 }
 
 /** Microsoft Maps endpoints. */
@@ -193,20 +946,120 @@ export interface MicrosoftMapsResource {
   /**
    * Bing Maps: `POST /v1/microsoft/maps/search`
    *
-   * Retrieve Bing Maps data with the existing PrismCrawl authentication, credits, and request-history behavior.
+   * Search Bing Maps or retrieve a native place by place_id. Optional missing place details keep their declared zero values.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
    */
   readonly search: Endpoint<T.BingMapsRequest, T.BingMapsResponse>;
 }
 
+/** Microsoft News endpoints. */
+export interface MicrosoftNewsResource {
+  /**
+   * Bing News: `POST /v1/microsoft/news/search`
+   *
+   * Retrieve native Bing News data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly search: PaginatedEndpoint<T.BingNewsRequest, T.BingNewsResponse>;
+}
+
+/** Microsoft Shopping endpoints. */
+export interface MicrosoftShoppingResource {
+  /**
+   * Bing Product: `POST /v1/microsoft/shopping/product`
+   *
+   * Retrieve native Bing Product data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly product: Endpoint<T.BingProductRequest, T.BingProductResponse>;
+  /**
+   * Bing Shopping: `POST /v1/microsoft/shopping/search`
+   *
+   * Retrieve native Bing Shopping data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly search: PaginatedEndpoint<T.BingShoppingRequest, T.BingShoppingResponse>;
+}
+
+/** Microsoft Videos endpoints. */
+export interface MicrosoftVideosResource {
+  /**
+   * Bing Videos: `POST /v1/microsoft/videos/search`
+   *
+   * Retrieve native Bing Videos data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly search: PaginatedEndpoint<T.BingVideosRequest, T.BingVideosResponse>;
+}
+
 /** Microsoft endpoints. */
 export interface MicrosoftResource {
+  readonly images: MicrosoftImagesResource;
   readonly maps: MicrosoftMapsResource;
+  readonly news: MicrosoftNewsResource;
+  readonly shopping: MicrosoftShoppingResource;
+  readonly videos: MicrosoftVideosResource;
+  /**
+   * Bing Copilot: `POST /v1/microsoft/copilot`
+   *
+   * Retrieve native Bing Copilot answers and citations. HTML output for streamed answers contains the assembled final page, citations, and completion metadata.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly copilot: Endpoint<T.BingCopilotRequest, T.BingCopilotResponse>;
   /**
    * Search Bing: `POST /v1/microsoft/search`
    *
    * Returns normalized Bing results, or encoded source HTML.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
    */
   readonly search: PaginatedEndpoint<T.MicrosoftSearchRequest, T.MicrosoftSearchResponse>;
+}
+
+/** Naver endpoints. */
+export interface NaverResource {
+  /**
+   * Naver AI Mode: `POST /v1/naver/ai-mode`
+   *
+   * Retrieve Naver AI Tab answers and continue a conversation with a follow-up question.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly aiMode: Endpoint<T.NaverAiModeRequest, T.NaverAiModeResponse>;
+  /**
+   * Naver AI Overview: `POST /v1/naver/ai-overview`
+   *
+   * Retrieve native Naver AI Overview data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly aiOverview: Endpoint<T.NaverAiOverviewRequest, T.NaverAiOverviewResponse>;
+  /**
+   * Naver Search: `POST /v1/naver/search`
+   *
+   * Retrieve native Naver Search data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly search: PaginatedEndpoint<T.NaverRequest, T.NaverResponse>;
+}
+
+/** Opentable endpoints. */
+export interface OpentableResource {
+  /**
+   * OpenTable Reviews: `POST /v1/opentable/reviews`
+   *
+   * Retrieve native OpenTable restaurant reviews and source-reported pagination. Bounded regional acquisition preserves the requested restaurant identity and English presentation. Confirmed missing restaurants return HTTP 200 with empty results and search_parameters.restaurant_not_found=true, costing one credit. Malformed requests and retrieval failures are uncharged.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly reviews: PaginatedEndpoint<T.OpentableReviewsRequest, T.OpentableReviewsResponse>;
 }
 
 /** Tripadvisor endpoints. */
@@ -215,146 +1068,623 @@ export interface TripadvisorResource {
    * Tripadvisor Place: `POST /v1/tripadvisor/place`
    *
    * Retrieve Tripadvisor Place data with the existing PrismCrawl authentication, credits, and request-history behavior.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
    */
   readonly place: Endpoint<T.TripadvisorPlaceRequest, T.TripadvisorPlaceResponse>;
   /**
    * Tripadvisor Reviews: `POST /v1/tripadvisor/reviews`
    *
-   * Retrieve Tripadvisor Reviews data with the existing PrismCrawl authentication, credits, and request-history behavior.
+   * Retrieve native Tripadvisor reviews. Detailed sorting uses the source published-review order for restaurants, hotels, attractions and activity products. Source-confirmed unsupported sort/place combinations return HTTP 400 without charging. A detailed-review lookup that confirms the requested place is missing returns HTTP 200 with empty results and place_not_found metadata, and costs one credit. Challenges and ambiguous source responses remain errors.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
    */
   readonly reviews: PaginatedEndpoint<T.TripadvisorReviewsRequest, T.TripadvisorReviewsResponse>;
   /**
    * Tripadvisor Search: `POST /v1/tripadvisor/search`
    *
    * Retrieve Tripadvisor Search data with the existing PrismCrawl authentication, credits, and request-history behavior.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
    */
   readonly search: PaginatedEndpoint<T.TripadvisorRequest, T.TripadvisorResponse>;
+}
+
+/** Walmart Product endpoints. */
+export interface WalmartProductResource {
+  /**
+   * Walmart Sellers: `POST /v1/walmart/product/sellers`
+   *
+   * Retrieve offers from sellers for a Walmart US item in the selected store session. Requires the item ID and store ID.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly sellers: Endpoint<T.WalmartProductSellersRequest, T.WalmartProductSellersResponse>;
+}
+
+/** Walmart endpoints. */
+export interface WalmartResource {
+  /**
+   * Walmart Product: `POST /v1/walmart/product`
+   *
+   * Retrieve native Walmart Product data. A native Item404 page or an explicit item-service not-found error bound to the exact requested product returns HTTP 200 with empty results, product_not_found and source_status metadata, and costs one credit. source_status preserves the HTTP status of the confirming source, which can be 200 or 404. Identified out-of-stock products remain valid results. Empty reviews, challenges and conflicting source identities do not establish absence; failed store selection remains an error.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly product: Endpoint<T.WalmartProductRequest, T.WalmartProductResponse> & WalmartProductResource;
+  /**
+   * Walmart Reviews: `POST /v1/walmart/reviews`
+   *
+   * Retrieve native Walmart Reviews data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly reviews: PaginatedEndpoint<T.WalmartReviewsRequest, T.WalmartReviewsResponse>;
+  /**
+   * Walmart Search: `POST /v1/walmart/search`
+   *
+   * Retrieve native Walmart Search data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly search: PaginatedEndpoint<T.WalmartRequest, T.WalmartResponse>;
+}
+
+/** Yahoo Images endpoints. */
+export interface YahooImagesResource {
+  /**
+   * Yahoo Images: `POST /v1/yahoo/images/search`
+   *
+   * Retrieve native Yahoo Images data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly search: PaginatedEndpoint<T.YahooImagesRequest, T.YahooImagesResponse>;
+}
+
+/** Yahoo Videos endpoints. */
+export interface YahooVideosResource {
+  /**
+   * Yahoo Videos: `POST /v1/yahoo/videos/search`
+   *
+   * Retrieve native Yahoo Videos data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly search: PaginatedEndpoint<T.YahooVideosRequest, T.YahooVideosResponse>;
+}
+
+/** Yahoo endpoints. */
+export interface YahooResource {
+  readonly images: YahooImagesResource;
+  readonly videos: YahooVideosResource;
+  /**
+   * Yahoo Search: `POST /v1/yahoo/search`
+   *
+   * Retrieve native Yahoo Search data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly search: PaginatedEndpoint<T.YahooRequest, T.YahooResponse>;
+  /**
+   * Yahoo Trends: `POST /v1/yahoo/trends`
+   *
+   * Retrieve trending Yahoo topics, related articles, videos, categories, milestones, and native continuation.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly trends: PaginatedEndpoint<T.YahooTrendsRequest, T.YahooTrendsResponse>;
+}
+
+/** Yandex Images endpoints. */
+export interface YandexImagesResource {
+  /**
+   * Yandex Images: `POST /v1/yandex/images/search`
+   *
+   * Retrieve native Yandex Images data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly search: PaginatedEndpoint<T.YandexImagesRequest, T.YandexImagesResponse>;
+}
+
+/** Yandex Videos endpoints. */
+export interface YandexVideosResource {
+  /**
+   * Yandex Videos: `POST /v1/yandex/videos/search`
+   *
+   * Retrieve native Yandex Videos data.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly search: PaginatedEndpoint<T.YandexVideosRequest, T.YandexVideosResponse>;
+}
+
+/** Yandex endpoints. */
+export interface YandexResource {
+  readonly images: YandexImagesResource;
+  readonly videos: YandexVideosResource;
+  /**
+   * Yandex Search: `POST /v1/yandex/search`
+   *
+   * Retrieve native Yandex Search data. Responses identify the source domain, interface language, and regional context; native regional defaults can affect ranking.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly search: PaginatedEndpoint<T.YandexRequest, T.YandexResponse>;
 }
 
 /** Yelp endpoints. */
 export interface YelpResource {
   /**
+   * Yelp Place: `POST /v1/yelp/place`
+   *
+   * Return a Yelp business by alias or encoded business ID, optionally including its full menu.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly place: Endpoint<T.YelpPlaceRequest, T.YelpPlaceResponse>;
+  /**
    * Yelp Reviews: `POST /v1/yelp/reviews`
    *
-   * Return complete Yelp business reviews by public business alias, with native sorting and page-based pagination. Keep language, sort_by, and limit unchanged when increasing page.
+   * Return Yelp business reviews by alias or encoded business ID. Filter recommended reviews by text and ratings, or select not-recommended reviews with their separate offset. Keep filters, language, sorting, and limit unchanged when paginating.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
    */
   readonly reviews: PaginatedEndpoint<T.YelpReviewsRequest, T.YelpReviewsResponse>;
   /**
-   * Yelp Business Lookup: `POST /v1/yelp/search`
+   * Yelp Search: `POST /v1/yelp/search`
    *
-   * Search Yelp's native business lookup by query and exactly one of location or coordinates. Results follow the lookup's native order within its first 200 businesses. Category filters and alternative sorts are unsupported. A location Yelp cannot resolve returns a successful empty result with search_parameters.location_not_found set to true and consumes one search credit. Keep query, location, device, language, and limit unchanged when increasing page.
+   * Search Yelp businesses by query and area. Category, attribute, neighborhood, alternative sort and regional-domain selections use standard search. Unfiltered US relevance requests retain native business lookup. Pagination is limited to the first 200 businesses.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
    */
   readonly search: PaginatedEndpoint<T.YelpRequest, T.YelpResponse>;
 }
 
+/** Youtube endpoints. */
+export interface YoutubeResource {
+  /**
+   * YouTube Channel: `POST /v1/youtube/channel`
+   *
+   * Read a public channel profile and videos, shorts, streams, podcasts, playlists, posts, or channel search results. Native sorting and pagination retain source order; about adds channel details. Use a channel ID or @handle. A source-confirmed missing channel returns HTTP 200 with empty results and search_parameters.channel_not_found=true, costing one credit. Unknown retrieval failures remain errors and are uncharged.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly channel: PaginatedEndpoint<T.YoutubeChannelRequest, T.YoutubeChannelResponse>;
+  /**
+   * YouTube Search: `POST /v1/youtube/search`
+   *
+   * Search public YouTube videos, channels, and playlists. Results retain the native source order and page size.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly search: PaginatedEndpoint<T.YoutubeRequest, T.YoutubeResponse>;
+  /**
+   * YouTube Video Transcript: `POST /v1/youtube/transcript`
+   *
+   * Retrieve source caption segments, timestamps, and available languages for a YouTube video. A corroborated missing video or source-confirmed unavailable caption track returns HTTP 200 with empty results and transcript_unavailable metadata, and costs one credit. Blocking, private-video admission, and unconfirmed source failures remain errors.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly transcript: Endpoint<T.YoutubeVideoTranscriptRequest, T.YoutubeVideoTranscriptResponse>;
+  /**
+   * YouTube Video: `POST /v1/youtube/video`
+   *
+   * Read public video metadata, related videos, and comments. Follow the separate comments, sorting, related-video, and reply tokens using next_page_token with the same video ID and locale.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly video: PaginatedEndpoint<T.YoutubeVideoRequest, T.YoutubeVideoResponse>;
+}
+
+/** Zillow endpoints. */
+export interface ZillowResource {
+  /**
+   * Zillow Search: `POST /v1/zillow/search`
+   *
+   * Search Zillow listings using a city/neighborhood/postal query, a region ID, or map bounds. Filter sale, rental and sold inventory by property details, amenities and listing selections. Filter and location selections must be retained by the source; omitted optional listing details remain zero values. Query and region_id are mutually exclusive. Rental-only and sale-only filters require the corresponding status_type.
+   *
+   * Send Prefer: respond-async, a unique Idempotency-Key, and webhook_url plus webhook_secret in the JSON body. The callback receives the completed endpoint response by POST, including errors; Accept: text/html requests direct HTML on supported endpoints. Prism-Result-Status carries the search HTTP status. Verify Prism-Signature (t=UNIX_SECONDS,v1=HEX_HMAC_SHA256) over the exact timestamp, a period, and the raw request body bytes, using webhook_secret. Compare signatures in constant time, reject timestamps more than five minutes old, and deduplicate Prism-Event-Id. Retries retain the same event ID and result, with a fresh signature. Return any 2xx status within 10 seconds to acknowledge delivery. Failures and redirects are retried up to eight attempts over at most one hour; no search is repeated or charged for callback retries. Retry uncertain submissions with the same key and identical request, callback and Accept header; changes return 409. Keys are account-scoped and retained for at least 24 hours. New async requests require a callback; previously accepted jobs remain readable. Optional status/result URLs remain available for troubleshooting, no more often than every five seconds; results expire one hour after completion and are limited to 8 MiB. Async bodies are limited to 64 KiB and cannot use zero_trace=true. Admission and result reads are free; normal billing applies once to a completed lookup. History replay starts a new synchronous search and does not retain callback credentials.
+   */
+  readonly search: PaginatedEndpoint<T.ZillowRequest, T.ZillowResponse>;
+}
+
 /** Every API namespace. */
 export interface Resources {
+  readonly airbnb: AirbnbResource;
   readonly amazon: AmazonResource;
   readonly apple: AppleResource;
+  readonly baidu: BaiduResource;
+  readonly brave: BraveResource;
   readonly duckduckgo: DuckDuckGoResource;
+  readonly ebay: EbayResource;
+  readonly facebook: FacebookResource;
   readonly google: GoogleResource;
+  readonly homeDepot: HomeDepotResource;
+  readonly instagram: InstagramResource;
   readonly microsoft: MicrosoftResource;
+  readonly naver: NaverResource;
+  readonly opentable: OpentableResource;
   readonly tripadvisor: TripadvisorResource;
+  readonly walmart: WalmartResource;
+  readonly yahoo: YahooResource;
+  readonly yandex: YandexResource;
   readonly yelp: YelpResource;
+  readonly youtube: YoutubeResource;
+  readonly zillow: ZillowResource;
   /** Alias of `microsoft`. */
   readonly bing: MicrosoftResource;
 }
 
 /** Build the endpoint tree for a client. */
 export function createResources(transport: Transport): Resources {
+  const airbnb: AirbnbResource = {
+    search: createEndpoint<T.AirbnbRequest, T.AirbnbResponse>(transport, "/v1/airbnb/search", "page"),
+  };
   const amazon: AmazonResource = {
-    search: createEndpoint(transport, "/v1/amazon/search", "page"),
+    autocomplete: createEndpoint<T.AmazonAutocompleteRequest, T.AmazonAutocompleteResponse>(transport, "/v1/amazon/autocomplete"),
+    product: createEndpoint<T.AmazonProductRequest, T.AmazonProductResponse>(transport, "/v1/amazon/product"),
+    search: createEndpoint<T.AmazonSearchRequest, T.AmazonSearchResponse>(transport, "/v1/amazon/search", "page"),
   };
   const apple: AppleResource = {
     appStore: {
-      product: createEndpoint(transport, "/v1/apple/app-store/product"),
-      reviews: createEndpoint(transport, "/v1/apple/app-store/reviews", "token"),
-      search: createEndpoint(transport, "/v1/apple/app-store/search", "token"),
+      product: createEndpoint<T.AppleAppStoreProductRequest, T.AppleAppStoreProductResponse>(transport, "/v1/apple/app-store/product"),
+      reviews: createEndpoint<T.AppleAppStoreReviewsRequest, T.AppleAppStoreReviewsResponse>(transport, "/v1/apple/app-store/reviews", "token"),
+      search: createEndpoint<T.AppleAppStoreRequest, T.AppleAppStoreResponse>(transport, "/v1/apple/app-store/search", "token"),
     },
     maps: {
-      reviews: createEndpoint(transport, "/v1/apple/maps/reviews"),
-      search: createEndpoint(transport, "/v1/apple/maps/search"),
+      place: createEndpoint<T.AppleMapsPlaceRequest, T.AppleMapsPlaceResponse>(transport, "/v1/apple/maps/place"),
+      reviews: createEndpoint<T.AppleMapsReviewsRequest, T.AppleMapsReviewsResponse>(transport, "/v1/apple/maps/reviews"),
+      search: createEndpoint<T.AppleMapsRequest, T.AppleMapsResponse>(transport, "/v1/apple/maps/search"),
     },
+  };
+  const baidu: BaiduResource = {
+    news: {
+      search: createEndpoint<T.BaiduNewsRequest, T.BaiduNewsResponse>(transport, "/v1/baidu/news/search", "page"),
+    },
+    search: createEndpoint<T.BaiduRequest, T.BaiduResponse>(transport, "/v1/baidu/search", "page"),
+  };
+  const brave: BraveResource = {
+    aiMode: createEndpoint<T.BraveAiModeRequest, T.BraveAiModeResponse>(transport, "/v1/brave/ai-mode", "token"),
   };
   const duckduckgo: DuckDuckGoResource = {
     maps: {
-      search: createEndpoint(transport, "/v1/duckduckgo/maps/search"),
+      search: createEndpoint<T.DuckDuckGoMapsRequest, T.DuckDuckGoMapsResponse>(transport, "/v1/duckduckgo/maps/search"),
     },
-    search: createEndpoint(transport, "/v1/duckduckgo/search", "token"),
+    news: {
+      search: createEndpoint<T.DuckDuckGoNewsRequest, T.DuckDuckGoNewsResponse>(transport, "/v1/duckduckgo/news/search", "page"),
+    },
+    search: Object.assign(createEndpoint<T.DuckDuckGoRequest, T.DuckDuckGoResponse>(transport, "/v1/duckduckgo/search", "token"), {
+      light: createEndpoint<T.DuckDuckGoLightRequest, T.DuckDuckGoLightResponse>(transport, "/v1/duckduckgo/search/light", "token"),
+    }),
+  };
+  const ebay: EbayResource = {
+    product: createEndpoint<T.EbayProductRequest, T.EbayProductResponse>(transport, "/v1/ebay/product"),
+    search: createEndpoint<T.EbayRequest, T.EbayResponse>(transport, "/v1/ebay/search", "page"),
+    seller: createEndpoint<T.EbaySellerRequest, T.EbaySellerResponse>(transport, "/v1/ebay/seller", "page"),
+  };
+  const facebook: FacebookResource = {
+    profile: createEndpoint<T.FacebookProfileRequest, T.FacebookProfileResponse>(transport, "/v1/facebook/profile"),
   };
   const google: GoogleResource = {
     contributor: {
-      reviews: createEndpoint(transport, "/v1/google/contributor/reviews", "token"),
+      reviews: createEndpoint<T.GoogleContributorReviewsRequest, T.GoogleContributorReviewsResponse>(transport, "/v1/google/contributor/reviews", "token"),
+    },
+    flights: {
+      autocomplete: createEndpoint<T.GoogleFlightsAutocompleteRequest, T.GoogleFlightsAutocompleteResponse>(transport, "/v1/google/flights/autocomplete"),
+      deals: createEndpoint<T.GoogleFlightsDealsRequest, T.GoogleFlightsDealsResponse>(transport, "/v1/google/flights/deals"),
+      search: createEndpoint<T.GoogleFlightsRequest, T.GoogleFlightsResponse>(transport, "/v1/google/flights/search"),
+    },
+    hotels: {
+      autocomplete: createEndpoint<T.GoogleHotelsAutocompleteRequest, T.GoogleHotelsAutocompleteResponse>(transport, "/v1/google/hotels/autocomplete"),
+      photos: createEndpoint<T.GoogleHotelsPhotosRequest, T.GoogleHotelsPhotosResponse>(transport, "/v1/google/hotels/photos", "token"),
+      reviews: createEndpoint<T.GoogleHotelsReviewsRequest, T.GoogleHotelsReviewsResponse>(transport, "/v1/google/hotels/reviews", "token"),
+      search: createEndpoint<T.GoogleHotelsRequest, T.GoogleHotelsResponse>(transport, "/v1/google/hotels/search", "token"),
+    },
+    light: {
+      search: createEndpoint<T.GoogleLightRequest, T.GoogleLightResponse>(transport, "/v1/google/light/search", "page"),
     },
     maps: {
-      reviews: createEndpoint(transport, "/v1/google/maps/reviews", "token"),
-      search: createEndpoint(transport, "/v1/google/maps/search"),
+      autocomplete: createEndpoint<T.GoogleMapsAutocompleteRequest, T.GoogleMapsAutocompleteResponse>(transport, "/v1/google/maps/autocomplete"),
+      directions: createEndpoint<T.GoogleMapsDirectionsRequest, T.GoogleMapsDirectionsResponse>(transport, "/v1/google/maps/directions"),
+      photos: Object.assign(createEndpoint<T.GoogleMapsPhotosRequest, T.GoogleMapsPhotosResponse>(transport, "/v1/google/maps/photos", "token"), {
+        meta: createEndpoint<T.GoogleMapsPhotoMetaRequest, T.GoogleMapsPhotoMetaResponse>(transport, "/v1/google/maps/photos/meta"),
+      }),
+      posts: createEndpoint<T.GoogleMapsPostsRequest, T.GoogleMapsPostsResponse>(transport, "/v1/google/maps/posts", "token"),
+      reviews: createEndpoint<T.GoogleMapsReviewsRequest, T.GoogleMapsReviewsResponse>(transport, "/v1/google/maps/reviews", "token"),
+      search: createEndpoint<T.GoogleMapsSearchRequest, T.GoogleMapsSearchResponse>(transport, "/v1/google/maps/search"),
+    },
+    patents: {
+      details: createEndpoint<T.GooglePatentsDetailsRequest, T.GooglePatentsDetailsResponse>(transport, "/v1/google/patents/details"),
+      search: createEndpoint<T.GooglePatentsRequest, T.GooglePatentsResponse>(transport, "/v1/google/patents/search", "page"),
     },
     play: {
       apps: {
-        search: createEndpoint(transport, "/v1/google/play/apps/search", "token"),
+        search: createEndpoint<T.GooglePlayAppsRequest, T.GooglePlayAppsResponse>(transport, "/v1/google/play/apps/search", "token"),
       },
       books: {
-        search: createEndpoint(transport, "/v1/google/play/books/search", "token"),
+        search: createEndpoint<T.GooglePlayBooksRequest, T.GooglePlayBooksResponse>(transport, "/v1/google/play/books/search", "token"),
       },
       games: {
-        search: createEndpoint(transport, "/v1/google/play/games/search", "token"),
+        search: createEndpoint<T.GooglePlayGamesRequest, T.GooglePlayGamesResponse>(transport, "/v1/google/play/games/search", "token"),
       },
       movies: {
-        search: createEndpoint(transport, "/v1/google/play/movies/search", "token"),
+        search: createEndpoint<T.GooglePlayMoviesRequest, T.GooglePlayMoviesResponse>(transport, "/v1/google/play/movies/search", "token"),
       },
-      product: createEndpoint(transport, "/v1/google/play/product"),
-      reviews: createEndpoint(transport, "/v1/google/play/reviews", "token"),
+      product: createEndpoint<T.GooglePlayProductRequest, T.GooglePlayProductResponse>(transport, "/v1/google/play/product"),
+      reviews: createEndpoint<T.GooglePlayReviewsRequest, T.GooglePlayReviewsResponse>(transport, "/v1/google/play/reviews", "token"),
     },
-    shopping: {
-      product: createEndpoint(transport, "/v1/google/shopping/product"),
+    scholar: {
+      author: createEndpoint<T.GoogleScholarAuthorRequest, T.GoogleScholarAuthorResponse>(transport, "/v1/google/scholar/author", "page"),
+      caseLaw: createEndpoint<T.GoogleScholarCaseLawRequest, T.GoogleScholarCaseLawResponse>(transport, "/v1/google/scholar/case-law", "page"),
+      cite: createEndpoint<T.GoogleScholarCiteRequest, T.GoogleScholarCiteResponse>(transport, "/v1/google/scholar/cite"),
+      search: createEndpoint<T.GoogleScholarRequest, T.GoogleScholarResponse>(transport, "/v1/google/scholar/search", "page"),
     },
-    search: createEndpoint(transport, "/v1/google/search"),
+    travel: {
+      explore: createEndpoint<T.GoogleTravelExploreRequest, T.GoogleTravelExploreResponse>(transport, "/v1/google/travel/explore"),
+    },
+    aboutThisResult: createEndpoint<T.GoogleAboutThisResultRequest, T.GoogleAboutThisResultResponse>(transport, "/v1/google/about-this-result"),
+    ads: Object.assign(createEndpoint<T.GoogleAdsRequest, T.GoogleAdsResponse>(transport, "/v1/google/ads"), {
+      transparency: Object.assign(createEndpoint<T.GoogleAdsTransparencyRequest, T.GoogleAdsTransparencyResponse>(transport, "/v1/google/ads/transparency", "token"), {
+        details: createEndpoint<T.GoogleAdsTransparencyAdDetailsRequest, T.GoogleAdsTransparencyAdDetailsResponse>(transport, "/v1/google/ads/transparency/details"),
+      }),
+    }),
+    aiMode: createEndpoint<T.GoogleAiModeRequest, T.GoogleAiModeResponse>(transport, "/v1/google/ai-mode"),
+    aiOverview: createEndpoint<T.GoogleAiOverviewRequest, T.GoogleAiOverviewResponse>(transport, "/v1/google/ai-overview"),
+    autocomplete: createEndpoint<T.GoogleAutocompleteRequest, T.GoogleAutocompleteResponse>(transport, "/v1/google/autocomplete"),
+    decode: createEndpoint<T.GoogleDecodeRequest, T.GoogleDecodeResponse>(transport, "/v1/google/decode"),
+    events: createEndpoint<T.GoogleEventsRequest, T.GoogleEventsResponse>(transport, "/v1/google/events"),
+    finance: Object.assign(createEndpoint<T.GoogleFinanceRequest, T.GoogleFinanceResponse>(transport, "/v1/google/finance"), {
+      markets: createEndpoint<T.GoogleFinanceMarketsRequest, T.GoogleFinanceMarketsResponse>(transport, "/v1/google/finance/markets"),
+    }),
+    forums: createEndpoint<T.GoogleForumsRequest, T.GoogleForumsResponse>(transport, "/v1/google/forums", "page"),
+    images: Object.assign(createEndpoint<T.GoogleImagesRequest, T.GoogleImagesResponse>(transport, "/v1/google/images", "page"), {
+      light: createEndpoint<T.GoogleImagesLightRequest, T.GoogleImagesLightResponse>(transport, "/v1/google/images/light", "page"),
+      relatedContent: createEndpoint<T.GoogleImagesRelatedContentRequest, T.GoogleImagesRelatedContentResponse>(transport, "/v1/google/images/related-content"),
+    }),
+    jobs: Object.assign(createEndpoint<T.GoogleJobsRequest, T.GoogleJobsResponse>(transport, "/v1/google/jobs", "token"), {
+      listing: createEndpoint<T.GoogleJobsListingRequest, T.GoogleJobsListingResponse>(transport, "/v1/google/jobs/listing"),
+    }),
+    lens: createEndpoint<T.GoogleLensRequest, T.GoogleLensResponse>(transport, "/v1/google/lens"),
+    local: Object.assign(createEndpoint<T.GoogleLocalRequest, T.GoogleLocalResponse>(transport, "/v1/google/local"), {
+      services: createEndpoint<T.GoogleLocalServicesRequest, T.GoogleLocalServicesResponse>(transport, "/v1/google/local/services"),
+    }),
+    news: Object.assign(createEndpoint<T.GoogleNewsRequest, T.GoogleNewsResponse>(transport, "/v1/google/news", "page"), {
+      light: createEndpoint<T.GoogleNewsLightRequest, T.GoogleNewsLightResponse>(transport, "/v1/google/news/light", "page"),
+    }),
+    relatedQuestions: createEndpoint<T.GoogleRelatedQuestionsRequest, T.GoogleRelatedQuestionsResponse>(transport, "/v1/google/related-questions", "token"),
+    reverseImage: createEndpoint<T.GoogleReverseImageRequest, T.GoogleReverseImageResponse>(transport, "/v1/google/reverse-image"),
+    search: createEndpoint<T.GoogleSearchRequest, T.GoogleSearchResponse>(transport, "/v1/google/search"),
+    shopping: Object.assign(createEndpoint<T.GoogleShoppingRequest, T.GoogleShoppingResponse>(transport, "/v1/google/shopping", "page"), {
+      filters: createEndpoint<T.GoogleShoppingFiltersRequest, T.GoogleShoppingFiltersResponse>(transport, "/v1/google/shopping/filters"),
+      immersiveProduct: createEndpoint<T.GoogleImmersiveProductRequest, T.GoogleImmersiveProductResponse>(transport, "/v1/google/shopping/immersive-product", "token"),
+      light: createEndpoint<T.GoogleShoppingLightRequest, T.GoogleShoppingLightResponse>(transport, "/v1/google/shopping/light", "page"),
+      product: createEndpoint<T.GoogleShoppingProductRequest, T.GoogleShoppingProductResponse>(transport, "/v1/google/shopping/product"),
+    }),
+    shortVideos: createEndpoint<T.GoogleShortVideosRequest, T.GoogleShortVideosResponse>(transport, "/v1/google/short-videos", "page"),
+    sports: createEndpoint<T.GoogleSportsRequest, T.GoogleSportsResponse>(transport, "/v1/google/sports"),
+    trends: Object.assign(createEndpoint<T.GoogleTrendsRequest, T.GoogleTrendsResponse>(transport, "/v1/google/trends"), {
+      autocomplete: createEndpoint<T.GoogleTrendsAutocompleteRequest, T.GoogleTrendsAutocompleteResponse>(transport, "/v1/google/trends/autocomplete"),
+      news: createEndpoint<T.GoogleTrendsNewsRequest, T.GoogleTrendsNewsResponse>(transport, "/v1/google/trends/news"),
+      trendingNow: createEndpoint<T.GoogleTrendsTrendingNowRequest, T.GoogleTrendsTrendingNowResponse>(transport, "/v1/google/trends/trending-now"),
+    }),
+    videos: Object.assign(createEndpoint<T.GoogleVideosRequest, T.GoogleVideosResponse>(transport, "/v1/google/videos", "page"), {
+      light: createEndpoint<T.GoogleVideosLightRequest, T.GoogleVideosLightResponse>(transport, "/v1/google/videos/light", "page"),
+    }),
+  };
+  const homeDepot: HomeDepotResource = {
+    product: createEndpoint<T.HomeDepotProductRequest, T.HomeDepotProductResponse>(transport, "/v1/home-depot/product"),
+    reviews: createEndpoint<T.HomeDepotReviewsRequest, T.HomeDepotReviewsResponse>(transport, "/v1/home-depot/reviews", "page"),
+    search: createEndpoint<T.HomeDepotRequest, T.HomeDepotResponse>(transport, "/v1/home-depot/search", "page"),
+  };
+  const instagram: InstagramResource = {
+    profile: createEndpoint<T.InstagramProfileRequest, T.InstagramProfileResponse>(transport, "/v1/instagram/profile", "token"),
   };
   const microsoft: MicrosoftResource = {
-    maps: {
-      search: createEndpoint(transport, "/v1/microsoft/maps/search"),
+    images: {
+      reverse: createEndpoint<T.BingReverseImageRequest, T.BingReverseImageResponse>(transport, "/v1/microsoft/images/reverse", "token"),
+      search: createEndpoint<T.BingImagesRequest, T.BingImagesResponse>(transport, "/v1/microsoft/images/search", "page"),
     },
-    search: createEndpoint(transport, "/v1/microsoft/search", "token"),
+    maps: {
+      search: createEndpoint<T.BingMapsRequest, T.BingMapsResponse>(transport, "/v1/microsoft/maps/search"),
+    },
+    news: {
+      search: createEndpoint<T.BingNewsRequest, T.BingNewsResponse>(transport, "/v1/microsoft/news/search", "page"),
+    },
+    shopping: {
+      product: createEndpoint<T.BingProductRequest, T.BingProductResponse>(transport, "/v1/microsoft/shopping/product"),
+      search: createEndpoint<T.BingShoppingRequest, T.BingShoppingResponse>(transport, "/v1/microsoft/shopping/search", "page"),
+    },
+    videos: {
+      search: createEndpoint<T.BingVideosRequest, T.BingVideosResponse>(transport, "/v1/microsoft/videos/search", "page"),
+    },
+    copilot: createEndpoint<T.BingCopilotRequest, T.BingCopilotResponse>(transport, "/v1/microsoft/copilot"),
+    search: createEndpoint<T.MicrosoftSearchRequest, T.MicrosoftSearchResponse>(transport, "/v1/microsoft/search", "token"),
+  };
+  const naver: NaverResource = {
+    aiMode: createEndpoint<T.NaverAiModeRequest, T.NaverAiModeResponse>(transport, "/v1/naver/ai-mode"),
+    aiOverview: createEndpoint<T.NaverAiOverviewRequest, T.NaverAiOverviewResponse>(transport, "/v1/naver/ai-overview"),
+    search: createEndpoint<T.NaverRequest, T.NaverResponse>(transport, "/v1/naver/search", "page"),
+  };
+  const opentable: OpentableResource = {
+    reviews: createEndpoint<T.OpentableReviewsRequest, T.OpentableReviewsResponse>(transport, "/v1/opentable/reviews", "page"),
   };
   const tripadvisor: TripadvisorResource = {
-    place: createEndpoint(transport, "/v1/tripadvisor/place"),
-    reviews: createEndpoint(transport, "/v1/tripadvisor/reviews", "token"),
-    search: createEndpoint(transport, "/v1/tripadvisor/search", "token"),
+    place: createEndpoint<T.TripadvisorPlaceRequest, T.TripadvisorPlaceResponse>(transport, "/v1/tripadvisor/place"),
+    reviews: createEndpoint<T.TripadvisorReviewsRequest, T.TripadvisorReviewsResponse>(transport, "/v1/tripadvisor/reviews", "token"),
+    search: createEndpoint<T.TripadvisorRequest, T.TripadvisorResponse>(transport, "/v1/tripadvisor/search", "token"),
+  };
+  const walmart: WalmartResource = {
+    product: Object.assign(createEndpoint<T.WalmartProductRequest, T.WalmartProductResponse>(transport, "/v1/walmart/product"), {
+      sellers: createEndpoint<T.WalmartProductSellersRequest, T.WalmartProductSellersResponse>(transport, "/v1/walmart/product/sellers"),
+    }),
+    reviews: createEndpoint<T.WalmartReviewsRequest, T.WalmartReviewsResponse>(transport, "/v1/walmart/reviews", "page"),
+    search: createEndpoint<T.WalmartRequest, T.WalmartResponse>(transport, "/v1/walmart/search", "page"),
+  };
+  const yahoo: YahooResource = {
+    images: {
+      search: createEndpoint<T.YahooImagesRequest, T.YahooImagesResponse>(transport, "/v1/yahoo/images/search", "page"),
+    },
+    videos: {
+      search: createEndpoint<T.YahooVideosRequest, T.YahooVideosResponse>(transport, "/v1/yahoo/videos/search", "page"),
+    },
+    search: createEndpoint<T.YahooRequest, T.YahooResponse>(transport, "/v1/yahoo/search", "page"),
+    trends: createEndpoint<T.YahooTrendsRequest, T.YahooTrendsResponse>(transport, "/v1/yahoo/trends", "token"),
+  };
+  const yandex: YandexResource = {
+    images: {
+      search: createEndpoint<T.YandexImagesRequest, T.YandexImagesResponse>(transport, "/v1/yandex/images/search", "page"),
+    },
+    videos: {
+      search: createEndpoint<T.YandexVideosRequest, T.YandexVideosResponse>(transport, "/v1/yandex/videos/search", "page"),
+    },
+    search: createEndpoint<T.YandexRequest, T.YandexResponse>(transport, "/v1/yandex/search", "page"),
   };
   const yelp: YelpResource = {
-    reviews: createEndpoint(transport, "/v1/yelp/reviews", "page"),
-    search: createEndpoint(transport, "/v1/yelp/search", "page"),
+    place: createEndpoint<T.YelpPlaceRequest, T.YelpPlaceResponse>(transport, "/v1/yelp/place"),
+    reviews: createEndpoint<T.YelpReviewsRequest, T.YelpReviewsResponse>(transport, "/v1/yelp/reviews", "page"),
+    search: createEndpoint<T.YelpRequest, T.YelpResponse>(transport, "/v1/yelp/search", "page"),
   };
-  return { amazon, apple, duckduckgo, google, microsoft, tripadvisor, yelp, bing: microsoft };
+  const youtube: YoutubeResource = {
+    channel: createEndpoint<T.YoutubeChannelRequest, T.YoutubeChannelResponse>(transport, "/v1/youtube/channel", "token"),
+    search: createEndpoint<T.YoutubeRequest, T.YoutubeResponse>(transport, "/v1/youtube/search", "token"),
+    transcript: createEndpoint<T.YoutubeVideoTranscriptRequest, T.YoutubeVideoTranscriptResponse>(transport, "/v1/youtube/transcript"),
+    video: createEndpoint<T.YoutubeVideoRequest, T.YoutubeVideoResponse>(transport, "/v1/youtube/video", "token"),
+  };
+  const zillow: ZillowResource = {
+    search: createEndpoint<T.ZillowRequest, T.ZillowResponse>(transport, "/v1/zillow/search", "page"),
+  };
+  return { airbnb, amazon, apple, baidu, brave, duckduckgo, ebay, facebook, google, homeDepot, instagram, microsoft, naver, opentable, tripadvisor, walmart, yahoo, yandex, yelp, youtube, zillow, bing: microsoft };
 }
 
 /** Every endpoint, for tests and tooling. */
 export const ENDPOINTS = [
+  { path: "/v1/airbnb/search", attrPath: ["airbnb","search"], pagination: "page" },
+  { path: "/v1/amazon/autocomplete", attrPath: ["amazon","autocomplete"], pagination: null },
+  { path: "/v1/amazon/product", attrPath: ["amazon","product"], pagination: null },
   { path: "/v1/amazon/search", attrPath: ["amazon","search"], pagination: "page" },
   { path: "/v1/apple/app-store/product", attrPath: ["apple","appStore","product"], pagination: null },
   { path: "/v1/apple/app-store/reviews", attrPath: ["apple","appStore","reviews"], pagination: "token" },
   { path: "/v1/apple/app-store/search", attrPath: ["apple","appStore","search"], pagination: "token" },
+  { path: "/v1/apple/maps/place", attrPath: ["apple","maps","place"], pagination: null },
   { path: "/v1/apple/maps/reviews", attrPath: ["apple","maps","reviews"], pagination: null },
   { path: "/v1/apple/maps/search", attrPath: ["apple","maps","search"], pagination: null },
+  { path: "/v1/baidu/news/search", attrPath: ["baidu","news","search"], pagination: "page" },
+  { path: "/v1/baidu/search", attrPath: ["baidu","search"], pagination: "page" },
+  { path: "/v1/brave/ai-mode", attrPath: ["brave","aiMode"], pagination: "token" },
   { path: "/v1/duckduckgo/maps/search", attrPath: ["duckduckgo","maps","search"], pagination: null },
+  { path: "/v1/duckduckgo/news/search", attrPath: ["duckduckgo","news","search"], pagination: "page" },
   { path: "/v1/duckduckgo/search", attrPath: ["duckduckgo","search"], pagination: "token" },
+  { path: "/v1/duckduckgo/search/light", attrPath: ["duckduckgo","search","light"], pagination: "token" },
+  { path: "/v1/ebay/product", attrPath: ["ebay","product"], pagination: null },
+  { path: "/v1/ebay/search", attrPath: ["ebay","search"], pagination: "page" },
+  { path: "/v1/ebay/seller", attrPath: ["ebay","seller"], pagination: "page" },
+  { path: "/v1/facebook/profile", attrPath: ["facebook","profile"], pagination: null },
+  { path: "/v1/google/about-this-result", attrPath: ["google","aboutThisResult"], pagination: null },
+  { path: "/v1/google/ads", attrPath: ["google","ads"], pagination: null },
+  { path: "/v1/google/ads/transparency", attrPath: ["google","ads","transparency"], pagination: "token" },
+  { path: "/v1/google/ads/transparency/details", attrPath: ["google","ads","transparency","details"], pagination: null },
+  { path: "/v1/google/ai-mode", attrPath: ["google","aiMode"], pagination: null },
+  { path: "/v1/google/ai-overview", attrPath: ["google","aiOverview"], pagination: null },
+  { path: "/v1/google/autocomplete", attrPath: ["google","autocomplete"], pagination: null },
   { path: "/v1/google/contributor/reviews", attrPath: ["google","contributor","reviews"], pagination: "token" },
+  { path: "/v1/google/decode", attrPath: ["google","decode"], pagination: null },
+  { path: "/v1/google/events", attrPath: ["google","events"], pagination: null },
+  { path: "/v1/google/finance", attrPath: ["google","finance"], pagination: null },
+  { path: "/v1/google/finance/markets", attrPath: ["google","finance","markets"], pagination: null },
+  { path: "/v1/google/flights/autocomplete", attrPath: ["google","flights","autocomplete"], pagination: null },
+  { path: "/v1/google/flights/deals", attrPath: ["google","flights","deals"], pagination: null },
+  { path: "/v1/google/flights/search", attrPath: ["google","flights","search"], pagination: null },
+  { path: "/v1/google/forums", attrPath: ["google","forums"], pagination: "page" },
+  { path: "/v1/google/hotels/autocomplete", attrPath: ["google","hotels","autocomplete"], pagination: null },
+  { path: "/v1/google/hotels/photos", attrPath: ["google","hotels","photos"], pagination: "token" },
+  { path: "/v1/google/hotels/reviews", attrPath: ["google","hotels","reviews"], pagination: "token" },
+  { path: "/v1/google/hotels/search", attrPath: ["google","hotels","search"], pagination: "token" },
+  { path: "/v1/google/images", attrPath: ["google","images"], pagination: "page" },
+  { path: "/v1/google/images/light", attrPath: ["google","images","light"], pagination: "page" },
+  { path: "/v1/google/images/related-content", attrPath: ["google","images","relatedContent"], pagination: null },
+  { path: "/v1/google/jobs", attrPath: ["google","jobs"], pagination: "token" },
+  { path: "/v1/google/jobs/listing", attrPath: ["google","jobs","listing"], pagination: null },
+  { path: "/v1/google/lens", attrPath: ["google","lens"], pagination: null },
+  { path: "/v1/google/light/search", attrPath: ["google","light","search"], pagination: "page" },
+  { path: "/v1/google/local", attrPath: ["google","local"], pagination: null },
+  { path: "/v1/google/local/services", attrPath: ["google","local","services"], pagination: null },
+  { path: "/v1/google/maps/autocomplete", attrPath: ["google","maps","autocomplete"], pagination: null },
+  { path: "/v1/google/maps/directions", attrPath: ["google","maps","directions"], pagination: null },
+  { path: "/v1/google/maps/photos", attrPath: ["google","maps","photos"], pagination: "token" },
+  { path: "/v1/google/maps/photos/meta", attrPath: ["google","maps","photos","meta"], pagination: null },
+  { path: "/v1/google/maps/posts", attrPath: ["google","maps","posts"], pagination: "token" },
   { path: "/v1/google/maps/reviews", attrPath: ["google","maps","reviews"], pagination: "token" },
   { path: "/v1/google/maps/search", attrPath: ["google","maps","search"], pagination: null },
+  { path: "/v1/google/news", attrPath: ["google","news"], pagination: "page" },
+  { path: "/v1/google/news/light", attrPath: ["google","news","light"], pagination: "page" },
+  { path: "/v1/google/patents/details", attrPath: ["google","patents","details"], pagination: null },
+  { path: "/v1/google/patents/search", attrPath: ["google","patents","search"], pagination: "page" },
   { path: "/v1/google/play/apps/search", attrPath: ["google","play","apps","search"], pagination: "token" },
   { path: "/v1/google/play/books/search", attrPath: ["google","play","books","search"], pagination: "token" },
   { path: "/v1/google/play/games/search", attrPath: ["google","play","games","search"], pagination: "token" },
   { path: "/v1/google/play/movies/search", attrPath: ["google","play","movies","search"], pagination: "token" },
   { path: "/v1/google/play/product", attrPath: ["google","play","product"], pagination: null },
   { path: "/v1/google/play/reviews", attrPath: ["google","play","reviews"], pagination: "token" },
+  { path: "/v1/google/related-questions", attrPath: ["google","relatedQuestions"], pagination: "token" },
+  { path: "/v1/google/reverse-image", attrPath: ["google","reverseImage"], pagination: null },
+  { path: "/v1/google/scholar/author", attrPath: ["google","scholar","author"], pagination: "page" },
+  { path: "/v1/google/scholar/case-law", attrPath: ["google","scholar","caseLaw"], pagination: "page" },
+  { path: "/v1/google/scholar/cite", attrPath: ["google","scholar","cite"], pagination: null },
+  { path: "/v1/google/scholar/search", attrPath: ["google","scholar","search"], pagination: "page" },
   { path: "/v1/google/search", attrPath: ["google","search"], pagination: null },
+  { path: "/v1/google/shopping", attrPath: ["google","shopping"], pagination: "page" },
+  { path: "/v1/google/shopping/filters", attrPath: ["google","shopping","filters"], pagination: null },
+  { path: "/v1/google/shopping/immersive-product", attrPath: ["google","shopping","immersiveProduct"], pagination: "token" },
+  { path: "/v1/google/shopping/light", attrPath: ["google","shopping","light"], pagination: "page" },
   { path: "/v1/google/shopping/product", attrPath: ["google","shopping","product"], pagination: null },
+  { path: "/v1/google/short-videos", attrPath: ["google","shortVideos"], pagination: "page" },
+  { path: "/v1/google/sports", attrPath: ["google","sports"], pagination: null },
+  { path: "/v1/google/travel/explore", attrPath: ["google","travel","explore"], pagination: null },
+  { path: "/v1/google/trends", attrPath: ["google","trends"], pagination: null },
+  { path: "/v1/google/trends/autocomplete", attrPath: ["google","trends","autocomplete"], pagination: null },
+  { path: "/v1/google/trends/news", attrPath: ["google","trends","news"], pagination: null },
+  { path: "/v1/google/trends/trending-now", attrPath: ["google","trends","trendingNow"], pagination: null },
+  { path: "/v1/google/videos", attrPath: ["google","videos"], pagination: "page" },
+  { path: "/v1/google/videos/light", attrPath: ["google","videos","light"], pagination: "page" },
+  { path: "/v1/home-depot/product", attrPath: ["homeDepot","product"], pagination: null },
+  { path: "/v1/home-depot/reviews", attrPath: ["homeDepot","reviews"], pagination: "page" },
+  { path: "/v1/home-depot/search", attrPath: ["homeDepot","search"], pagination: "page" },
+  { path: "/v1/instagram/profile", attrPath: ["instagram","profile"], pagination: "token" },
+  { path: "/v1/microsoft/copilot", attrPath: ["microsoft","copilot"], pagination: null },
+  { path: "/v1/microsoft/images/reverse", attrPath: ["microsoft","images","reverse"], pagination: "token" },
+  { path: "/v1/microsoft/images/search", attrPath: ["microsoft","images","search"], pagination: "page" },
   { path: "/v1/microsoft/maps/search", attrPath: ["microsoft","maps","search"], pagination: null },
+  { path: "/v1/microsoft/news/search", attrPath: ["microsoft","news","search"], pagination: "page" },
   { path: "/v1/microsoft/search", attrPath: ["microsoft","search"], pagination: "token" },
+  { path: "/v1/microsoft/shopping/product", attrPath: ["microsoft","shopping","product"], pagination: null },
+  { path: "/v1/microsoft/shopping/search", attrPath: ["microsoft","shopping","search"], pagination: "page" },
+  { path: "/v1/microsoft/videos/search", attrPath: ["microsoft","videos","search"], pagination: "page" },
+  { path: "/v1/naver/ai-mode", attrPath: ["naver","aiMode"], pagination: null },
+  { path: "/v1/naver/ai-overview", attrPath: ["naver","aiOverview"], pagination: null },
+  { path: "/v1/naver/search", attrPath: ["naver","search"], pagination: "page" },
+  { path: "/v1/opentable/reviews", attrPath: ["opentable","reviews"], pagination: "page" },
   { path: "/v1/tripadvisor/place", attrPath: ["tripadvisor","place"], pagination: null },
   { path: "/v1/tripadvisor/reviews", attrPath: ["tripadvisor","reviews"], pagination: "token" },
   { path: "/v1/tripadvisor/search", attrPath: ["tripadvisor","search"], pagination: "token" },
+  { path: "/v1/walmart/product", attrPath: ["walmart","product"], pagination: null },
+  { path: "/v1/walmart/product/sellers", attrPath: ["walmart","product","sellers"], pagination: null },
+  { path: "/v1/walmart/reviews", attrPath: ["walmart","reviews"], pagination: "page" },
+  { path: "/v1/walmart/search", attrPath: ["walmart","search"], pagination: "page" },
+  { path: "/v1/yahoo/images/search", attrPath: ["yahoo","images","search"], pagination: "page" },
+  { path: "/v1/yahoo/search", attrPath: ["yahoo","search"], pagination: "page" },
+  { path: "/v1/yahoo/trends", attrPath: ["yahoo","trends"], pagination: "token" },
+  { path: "/v1/yahoo/videos/search", attrPath: ["yahoo","videos","search"], pagination: "page" },
+  { path: "/v1/yandex/images/search", attrPath: ["yandex","images","search"], pagination: "page" },
+  { path: "/v1/yandex/search", attrPath: ["yandex","search"], pagination: "page" },
+  { path: "/v1/yandex/videos/search", attrPath: ["yandex","videos","search"], pagination: "page" },
+  { path: "/v1/yelp/place", attrPath: ["yelp","place"], pagination: null },
   { path: "/v1/yelp/reviews", attrPath: ["yelp","reviews"], pagination: "page" },
   { path: "/v1/yelp/search", attrPath: ["yelp","search"], pagination: "page" },
+  { path: "/v1/youtube/channel", attrPath: ["youtube","channel"], pagination: "token" },
+  { path: "/v1/youtube/search", attrPath: ["youtube","search"], pagination: "token" },
+  { path: "/v1/youtube/transcript", attrPath: ["youtube","transcript"], pagination: null },
+  { path: "/v1/youtube/video", attrPath: ["youtube","video"], pagination: "token" },
+  { path: "/v1/zillow/search", attrPath: ["zillow","search"], pagination: "page" },
 ] as const;

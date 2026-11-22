@@ -58,6 +58,8 @@ interface TransportRequest extends RequestOptions {
   body?: unknown;
   query?: Record<string, string>;
   text?: boolean;
+  /** Safe to resend after a timeout or dropped connection (GETs, and POSTs with an Idempotency-Key). */
+  idempotent?: boolean;
 }
 
 const env = (name: string): string | undefined => {
@@ -204,8 +206,9 @@ export class Transport {
         if (error instanceof PrismCrawlError) throw error;
         if (req.signal?.aborted) throw new APIUserAbortError({ cause: error });
         // A connect failure means the request was never sent. Anything later (timeout,
-        // dropped connection) may have completed a billable search, so only GETs retry.
-        const retryable = req.method === "GET" || (!timedOut && isConnectError(error));
+        // dropped connection) may have completed a billable search, so only GETs and
+        // idempotency-keyed submissions retry.
+        const retryable = req.method === "GET" || req.idempotent === true || (!timedOut && isConnectError(error));
         if (!retryable || attempt >= maxRetries) {
           if (timedOut) throw new APITimeoutError({ cause: error });
           throw new APIConnectionError(`Connection error: ${(error as Error)?.message ?? error}`, { cause: error });

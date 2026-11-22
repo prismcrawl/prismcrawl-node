@@ -1,6 +1,6 @@
 {
   "name": "prismcrawl",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Official TypeScript and JavaScript client for the PrismCrawl API: search results, places, app stores, products, and reviews as structured JSON.",
   "keywords": [
     "prismcrawl",
